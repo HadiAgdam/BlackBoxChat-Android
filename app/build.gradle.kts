@@ -51,6 +51,12 @@ android {
 
 dependencies {
 
+    // BouncyCastle
+    implementation(libs.bcprov.jdk15to18)
+
+    // Volley
+    implementation(libs.volley)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
