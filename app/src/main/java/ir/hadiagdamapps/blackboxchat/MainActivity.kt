@@ -9,9 +9,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
+import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
+import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.InboxesRoute
+import ir.hadiagdamapps.blackboxchat.ui.screens.InboxesScreen
 import ir.hadiagdamapps.blackboxchat.ui.theme.BlackBoxChatAndroidTheme
+import ir.hadiagdamapps.blackboxchat.ui.viewmodels.InboxScreenViewmodel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +30,32 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BlackBoxChatAndroidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = InboxesRoute) {
+
+                    composable<InboxesRoute> {
+
+                        val viewmodel by remember {
+                            mutableStateOf(InboxScreenViewmodel(this@MainActivity))
+                        }
+
+                        viewmodel.loadInboxes()
+
+                        InboxesScreen(viewmodel = viewmodel)
+
+                    }
+
+                    composable<ConversationsRoute> { }
+
+                    composable<ChatRoute> { }
+
                 }
+
+
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BlackBoxChatAndroidTheme {
-        Greeting("Android")
     }
 }
