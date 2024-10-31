@@ -54,17 +54,26 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
     }
 
     fun pinChanged(newPin: String) {
-        if (newPin.length <= Pin.LENGTH)
+        if (newPin.length <= Pin.LENGTH) {
             pinDialogContent = newPin
+            pinDialogError = ""
+        }
     }
+
+    fun newInbox() {
+        pinDialogContent = ""
+        pinDialogError = ""
+        showPinDialog = true
+    }
+
 
     // ---------------------------------------------------------------------------------------------
 
-    fun newInbox() {
-        TODO(
-            "create a new inbox in database" +
-                    "add new inbox to _inboxes"
-        )
+    fun loadInboxes() {
+        _inboxes.clear()
+        inboxHandler.getInboxes().forEach {
+            _inboxes.add(it)
+        }
     }
 
     fun inboxClick(inboxId: Long) {
@@ -79,4 +88,5 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
     }
 
     // ---------------------------------------------------------------------------------------------
+
 }
