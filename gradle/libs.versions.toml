@@ -12,6 +12,8 @@ bcprovJdk15to18 = "1.72"
 volley = "1.2.1"
 navigationCompose = "2.8.3"
 serialization = "1.6.3"
+zxingAndroidEmbedded = "4.3.0"
+
 
 
 [libraries]
@@ -33,6 +35,8 @@ bcprov-jdk15to18 = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref =
 volley = { module = "com.android.volley:volley", version.ref = "volley" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
+zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+
 
 
 [plugins]

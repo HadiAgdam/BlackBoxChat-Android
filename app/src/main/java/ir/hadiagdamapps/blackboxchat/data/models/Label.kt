@@ -10,7 +10,7 @@ class Label private constructor(private val text: String) {
             return if (isValid(text)) Label(text) else null
         }
 
-        private fun isValid(text: String): Boolean {
+        fun isValid(text: String): Boolean {
             return text.length <= MAX_LENGTH && !text.contains(INVALID_CHARS_REGEX)
         }
     }

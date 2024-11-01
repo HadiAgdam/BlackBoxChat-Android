@@ -61,6 +61,9 @@ dependencies {
     // serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // Qr code Zxing
+    implementation(libs.zxing.android.embedded)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

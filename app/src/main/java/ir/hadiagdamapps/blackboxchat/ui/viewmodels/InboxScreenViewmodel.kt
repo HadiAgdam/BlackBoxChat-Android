@@ -1,12 +1,14 @@
 package ir.hadiagdamapps.blackboxchat.ui.viewmodels
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import ir.hadiagdamapps.blackboxchat.data.Clipboard
 import ir.hadiagdamapps.blackboxchat.data.InboxHandler
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
@@ -15,15 +17,20 @@ import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxPreviewModel
 class InboxScreenViewmodel(context: Context) : ViewModel() {
 
     private val inboxHandler = InboxHandler(context)
+    private val clipboard = Clipboard(context)
 
     private val _inboxes = mutableStateListOf<InboxPreviewModel>()
     val inboxes: SnapshotStateList<InboxPreviewModel> = _inboxes
 
     var showInboxDialog by mutableStateOf(false)
         private set
-    var inboxDialogContent: InboxPreviewModel? = null
+    var inboxDialogQrCode: Bitmap? by mutableStateOf(null)
         private set
-    var inboxDialogLabel: Label? = null
+    var inboxPublicKey: String by mutableStateOf("")
+        private set
+    var inboxDialogLabel: String by mutableStateOf("")
+        private set
+    var showConfirmDeleteDialog: Boolean by mutableStateOf(false)
         private set
 
 
@@ -66,7 +73,6 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
         showPinDialog = true
     }
 
-
     // ---------------------------------------------------------------------------------------------
 
     fun loadInboxes() {
@@ -80,6 +86,8 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
         TODO("Open the conversations screen and pass InboxId")
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     fun showInboxDialog(inbox: InboxPreviewModel) {
         TODO(
             "set the content of inboxDialog" +
@@ -87,6 +95,30 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
         )
     }
 
+    fun inboxDialogDismiss() {
+        showInboxDialog = true
+    }
+
+    fun inboxDialogCopyPublicKey() {
+        clipboard.copy(inboxPublicKey)
+    }
+
+    fun inboxDialogDeleteInbox() {
+        showConfirmDeleteDialog = true
+    }
+
+    fun inboxDialogLabelChange(newLabel: String) {
+        if (Label.isValid(newLabel)) inboxDialogLabel = newLabel
+    }
+
     // ---------------------------------------------------------------------------------------------
+
+    fun confirmDeleteDialogYesClick() {
+        _inboxes.removeIf { it.publicKey.display() == inboxPublicKey }
+    }
+
+    fun confirmDeleteDialogDismiss() {
+        showConfirmDeleteDialog = false
+    }
 
 }

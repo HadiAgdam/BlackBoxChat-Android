@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ir.hadiagdamapps.blackboxchat.ui.components.Screen
+import ir.hadiagdamapps.blackboxchat.ui.components.dialogs.ConfirmDeleteDialog
+import ir.hadiagdamapps.blackboxchat.ui.components.dialogs.InboxDetailsDialog
 import ir.hadiagdamapps.blackboxchat.ui.components.dialogs.PinDialog
 import ir.hadiagdamapps.blackboxchat.ui.components.inbox.InboxItem
 import ir.hadiagdamapps.blackboxchat.ui.viewmodels.InboxScreenViewmodel
@@ -36,8 +38,26 @@ fun InboxesScreen(viewmodel: InboxScreenViewmodel) {
                 onPinChanged = viewmodel::pinChanged,
                 error = viewmodel.pinDialogError,
                 dismiss = viewmodel::pinDialogDismiss,
-                okClick = viewmodel::pinDialogSubmit)
+                okClick = viewmodel::pinDialogSubmit
+            )
 
+
+        if (viewmodel.showInboxDialog)
+            InboxDetailsDialog(
+                qrCode = viewmodel.inboxDialogQrCode,
+                publicKey = viewmodel.inboxPublicKey,
+                label = viewmodel.inboxDialogLabel,
+                dismiss = viewmodel::inboxDialogDismiss,
+                copyPublicKey = viewmodel::inboxDialogCopyPublicKey,
+                deleteInbox = viewmodel::inboxDialogDeleteInbox,
+                labelValueChange = viewmodel::inboxDialogLabelChange
+            )
+
+        if (viewmodel.showConfirmDeleteDialog)
+            ConfirmDeleteDialog(
+                yesClick = viewmodel::confirmDeleteDialogYesClick,
+                dismiss = viewmodel::confirmDeleteDialogDismiss
+            )
 
     }
 

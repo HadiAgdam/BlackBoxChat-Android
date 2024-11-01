@@ -1,6 +1,6 @@
 package ir.hadiagdamapps.blackboxchat.data.models
 
-class PublicKey private constructor(text: String){
+class PublicKey private constructor(val text: String) {
 
     companion object {
         fun parse(text: String): PublicKey? {
@@ -12,4 +12,8 @@ class PublicKey private constructor(text: String){
             return true
         }
     }
+
+
+    fun display(): String = text
+
 }

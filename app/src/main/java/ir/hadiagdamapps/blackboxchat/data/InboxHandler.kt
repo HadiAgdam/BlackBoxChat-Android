@@ -34,4 +34,8 @@ class InboxHandler(context: Context) {
         TODO("return the list of inboxes")
     }
 
+    fun deleteInbox() {
+        TODO("delete inbox")
+    }
+
 }
