@@ -3,4 +3,6 @@ package ir.hadiagdamapps.blackboxchat.ui.navigation.routes
 import kotlinx.serialization.Serializable
 
 @Serializable
-class ConversationsRoute
+data class ConversationsRoute(
+    private val inboxId: Long
+)

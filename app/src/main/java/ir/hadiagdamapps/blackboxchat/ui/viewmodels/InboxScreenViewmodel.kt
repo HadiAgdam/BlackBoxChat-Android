@@ -8,19 +8,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import ir.hadiagdamapps.blackboxchat.data.Clipboard
 import ir.hadiagdamapps.blackboxchat.data.InboxHandler
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
 import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxPreviewModel
+import ir.hadiagdamapps.blackboxchat.data.qr.QrCodeGenerator
+import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
 
-class InboxScreenViewmodel(context: Context) : ViewModel() {
+class InboxScreenViewmodel(context: Context, private val navController: NavController) : ViewModel() {
 
     private val inboxHandler = InboxHandler(context)
     private val clipboard = Clipboard(context)
+    private val qrCodeGenerator = QrCodeGenerator()
 
     private val _inboxes = mutableStateListOf<InboxPreviewModel>()
     val inboxes: SnapshotStateList<InboxPreviewModel> = _inboxes
+
+    private var selectedInboxId: Long = -1
 
     var showInboxDialog by mutableStateOf(false)
         private set
@@ -83,20 +89,22 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
     }
 
     fun inboxClick(inboxId: Long) {
-        TODO("Open the conversations screen and pass InboxId")
+        navController.navigate(ConversationsRoute(inboxId))
     }
 
     // ---------------------------------------------------------------------------------------------
 
     fun showInboxDialog(inbox: InboxPreviewModel) {
-        TODO(
-            "set the content of inboxDialog" +
-                    "set showInbox to true"
-        )
+        selectedInboxId = inbox.inboxId
+        inboxDialogQrCode = qrCodeGenerator.generateCode(inbox.publicKey.display())
+        inboxPublicKey = inbox.publicKey.display()
+        inboxDialogLabel = inbox.label.display()
+        showInboxDialog = true
     }
 
     fun inboxDialogDismiss() {
-        showInboxDialog = true
+        showInboxDialog = false
+        inboxHandler.updateLabel(inboxDialogLabel, selectedInboxId)
     }
 
     fun inboxDialogCopyPublicKey() {
@@ -109,12 +117,17 @@ class InboxScreenViewmodel(context: Context) : ViewModel() {
 
     fun inboxDialogLabelChange(newLabel: String) {
         if (Label.isValid(newLabel)) inboxDialogLabel = newLabel
+        _inboxes.forEachIndexed { index, inboxPreviewModel ->
+            if (inboxPreviewModel.inboxId == selectedInboxId)
+                _inboxes[index] = _inboxes[index].copy(label = Label.create(inboxDialogLabel)!!)
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
 
     fun confirmDeleteDialogYesClick() {
         _inboxes.removeIf { it.publicKey.display() == inboxPublicKey }
+        inboxHandler.deleteInbox(selectedInboxId)
     }
 
     fun confirmDeleteDialogDismiss() {

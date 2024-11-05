@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     composable<InboxesRoute> {
 
                         val viewmodel by remember {
-                            mutableStateOf(InboxScreenViewmodel(this@MainActivity))
+                            mutableStateOf(InboxScreenViewmodel(this@MainActivity, navController))
                         }
 
                         viewmodel.loadInboxes()

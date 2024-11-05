@@ -34,8 +34,14 @@ class InboxHandler(context: Context) {
         TODO("return the list of inboxes")
     }
 
-    fun deleteInbox() {
+
+    fun deleteInbox(inboxId: Long) {
         TODO("delete inbox")
+    }
+
+
+    fun updateLabel(text: String, inboxId: Long) {
+        //TODO("update")
     }
 
 }
