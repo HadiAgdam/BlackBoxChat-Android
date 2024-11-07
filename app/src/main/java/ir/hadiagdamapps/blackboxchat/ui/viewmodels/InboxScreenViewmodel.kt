@@ -116,6 +116,7 @@ class InboxScreenViewmodel(context: Context, private val navController: NavContr
     }
 
     fun inboxDialogDeleteInbox() {
+        showInboxDialog = false
         showConfirmDeleteDialog = true
     }
 
@@ -132,6 +133,7 @@ class InboxScreenViewmodel(context: Context, private val navController: NavContr
     fun confirmDeleteDialogYesClick() {
         _inboxes.removeIf { it.publicKey.display() == inboxPublicKey }
         inboxHandler.deleteInbox(selectedInboxId)
+        showConfirmDeleteDialog = false
     }
 
     fun confirmDeleteDialogDismiss() {
