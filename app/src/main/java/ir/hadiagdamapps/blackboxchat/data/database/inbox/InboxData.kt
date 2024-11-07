@@ -120,4 +120,14 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
             c.close()
         }
     }
+
+    fun deleteInbox(inboxId: Long) {
+        writableDatabase.delete(table.tableName, "$INBOX_ID = ?", arrayOf(inboxId.toString()))
+    }
+
+    fun updateLabel(label: Label, inboxId: Long) {
+        writableDatabase.update(table.tableName, ContentValues().apply {
+            put(LABEL, label.display())
+        }, "$INBOX_ID = ?", arrayOf(inboxId.toString()))
+    }
 }

@@ -7,6 +7,7 @@ import ir.hadiagdamapps.blackboxchat.data.models.Pin
 import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxModel
 import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxPreviewModel
+import ir.hadiagdamapps.blackboxchat.data.models.inbox.toPreviewModel
 
 
 class InboxHandler(context: Context) {
@@ -25,14 +26,13 @@ class InboxHandler(context: Context) {
         }
 
 
-
     fun deleteInbox(inboxId: Long) {
-        TODO("delete inbox")
+        data.deleteInbox(inboxId)
     }
 
 
-    fun updateLabel(text: String, inboxId: Long) {
-        //TODO("update")
+    fun updateLabel(label: Label, inboxId: Long) {
+        data.updateLabel(label, inboxId)
     }
 
 }

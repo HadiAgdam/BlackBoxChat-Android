@@ -105,7 +105,10 @@ class InboxScreenViewmodel(context: Context, private val navController: NavContr
 
     fun inboxDialogDismiss() {
         showInboxDialog = false
-        inboxHandler.updateLabel(inboxDialogLabel, selectedInboxId)
+        inboxHandler.updateLabel(
+            Label.create(inboxDialogLabel) ?: return,
+            selectedInboxId
+        ) // not sure
     }
 
     fun inboxDialogCopyPublicKey() {
