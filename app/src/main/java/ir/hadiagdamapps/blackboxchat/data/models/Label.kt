@@ -1,5 +1,8 @@
 package ir.hadiagdamapps.blackboxchat.data.models
 
+import android.util.Log
+import androidx.core.util.toHalf
+
 
 class Label private constructor(private val text: String) {
 
@@ -8,7 +11,7 @@ class Label private constructor(private val text: String) {
         private val INVALID_CHARS_REGEX = Regex("[^a-zA-Z0-9 ]") // adjust as needed
 
         fun create(publicKey: PublicKey): Label {
-            TODO()
+            return Label(publicKey.display().substring(30, 60))
         }
 
         fun create(text: String): Label? {
