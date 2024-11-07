@@ -21,11 +21,7 @@ class InboxHandler(context: Context) {
 
     fun getInboxes(): List<InboxPreviewModel> =
         data.getInboxes().map {
-            InboxPreviewModel(
-                inboxId = it.inboxId,
-                publicKey = it.inboxPublicKey,
-                label = it.label
-            )
+            it.toPreviewModel()
         }
 
 

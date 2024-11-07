@@ -14,6 +14,7 @@ import ir.hadiagdamapps.blackboxchat.data.InboxHandler
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
 import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxPreviewModel
+import ir.hadiagdamapps.blackboxchat.data.models.inbox.toPreviewModel
 import ir.hadiagdamapps.blackboxchat.data.qr.QrCodeGenerator
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
 
@@ -58,7 +59,7 @@ class InboxScreenViewmodel(context: Context, private val navController: NavContr
 
         if (pin != null) {
             _inboxes.add(
-                inboxHandler.createInbox(pin)
+                inboxHandler.createInbox(pin).toPreviewModel()
             )
             pinDialogDismiss()
         } else

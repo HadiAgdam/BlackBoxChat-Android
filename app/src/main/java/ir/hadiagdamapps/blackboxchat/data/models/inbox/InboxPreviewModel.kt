@@ -8,3 +8,11 @@ data class InboxPreviewModel(
     val publicKey: PublicKey,
     val label: Label
 )
+
+fun InboxModel.toPreviewModel(): InboxPreviewModel {
+    return InboxPreviewModel(
+        inboxId = inboxId,
+        publicKey = inboxPublicKey,
+        label = label
+    )
+}
