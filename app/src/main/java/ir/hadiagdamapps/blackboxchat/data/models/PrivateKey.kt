@@ -12,7 +12,8 @@ class PrivateKey private constructor(private val text: String) {
 
 
     override fun toString(): String {
-        TODO("return the encrypted display of private key")
+        // temp
+        return text
     }
 
 }

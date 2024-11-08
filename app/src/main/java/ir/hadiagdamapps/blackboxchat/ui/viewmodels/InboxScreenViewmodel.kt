@@ -49,6 +49,10 @@ class InboxScreenViewmodel(context: Context, private val navController: NavContr
         private set
 
 
+    init {
+        loadInboxes()
+    }
+
     fun pinDialogDismiss() {
         pinDialogContent = ""
         showPinDialog = false
@@ -82,7 +86,7 @@ class InboxScreenViewmodel(context: Context, private val navController: NavContr
 
     // ---------------------------------------------------------------------------------------------
 
-    fun loadInboxes() {
+    private fun loadInboxes() {
         _inboxes.clear()
         inboxHandler.getInboxes().forEach {
             _inboxes.add(it)

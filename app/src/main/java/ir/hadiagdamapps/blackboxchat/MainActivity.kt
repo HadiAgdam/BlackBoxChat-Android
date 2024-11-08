@@ -17,11 +17,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import ir.hadiagdamapps.blackboxchat.ui.navigation.AppNavHost
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.InboxesRoute
+import ir.hadiagdamapps.blackboxchat.ui.screens.ConversationsScreen
 import ir.hadiagdamapps.blackboxchat.ui.screens.InboxesScreen
 import ir.hadiagdamapps.blackboxchat.ui.theme.BlackBoxChatAndroidTheme
+import ir.hadiagdamapps.blackboxchat.ui.viewmodels.ConversationsScreenViewmodel
 import ir.hadiagdamapps.blackboxchat.ui.viewmodels.InboxScreenViewmodel
 
 class MainActivity : ComponentActivity() {
@@ -31,30 +35,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             BlackBoxChatAndroidTheme {
 
-
                 val navController = rememberNavController()
 
-                NavHost(navController = navController, startDestination = InboxesRoute) {
-
-                    composable<InboxesRoute> {
-
-                        val viewmodel by remember {
-                            mutableStateOf(InboxScreenViewmodel(this@MainActivity, navController))
-                        }
-
-                        viewmodel.loadInboxes()
-
-                        InboxesScreen(viewmodel = viewmodel)
-
-                    }
-
-                    composable<ConversationsRoute> { }
-
-                    composable<ChatRoute> { }
-
-                }
-
-
+                AppNavHost(navController = navController, context = this)
             }
         }
     }

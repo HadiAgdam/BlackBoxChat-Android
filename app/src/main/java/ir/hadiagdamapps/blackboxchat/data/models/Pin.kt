@@ -10,11 +10,13 @@ class Pin private constructor(private val text: String) {
 
 
         fun parse(text: String): Pin? {
-            return if (text.isDigitsOnly() && text.length == LENGTH) Pin(
+            return if (isValid(text)) Pin(
                 Sha256.hash(text)
             )
             else null
         }
+
+        private fun isValid(text: String): Boolean = text.isDigitsOnly() && text.length == LENGTH
     }
 
 
