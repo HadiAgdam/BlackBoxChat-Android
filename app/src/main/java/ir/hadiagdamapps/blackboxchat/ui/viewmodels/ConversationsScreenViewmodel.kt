@@ -44,7 +44,7 @@ class ConversationsScreenViewmodel(
     var showConfirmDeleteDialog by mutableStateOf(false)
         private set
 
-    var showPinDialog by mutableStateOf(false)
+    var showPinDialog by mutableStateOf(true)
         private set
     var pinDialogContent by mutableStateOf("")
         private set
