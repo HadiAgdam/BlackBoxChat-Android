@@ -1,26 +1,28 @@
 package ir.hadiagdamapps.blackboxchat.data.database
 
+import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationColumns
 import ir.hadiagdamapps.blackboxchat.data.database.inbox.InboxColumns
 import kotlin.enums.EnumEntries
 
 enum class Table
     (
-    val tableName: String,
-    val createQuery: String,
-    val dropQuery: String
+    val tableName: String, val columnsAsQuery: String
 ) {
 
     INBOXES(
-        "inboxes",
-        """
-                CREATE TABLE inboxes (
-                
-                ${InboxColumns.entries.toTypedArray().asQuery()}
-                
-                )
-            """.trimIndent(),
-        "DROP TABLE IF EXISTS inboxes"
-    );
+        tableName = "inboxes",
+        columnsAsQuery = InboxColumns.entries.toTypedArray().asQuery()
+    ),
+
+    CONVERSATIONS(
+        tableName = "conversations",
+        columnsAsQuery = ConversationColumns.entries.toTypedArray().asQuery()
+    )
+    ;
+
+    val createQuery = "CREATE TABLE $tableName ($columnsAsQuery) "
+    val dropQuery = "DROP TABLE IF EXISTS $tableName";
+
 }
 
 

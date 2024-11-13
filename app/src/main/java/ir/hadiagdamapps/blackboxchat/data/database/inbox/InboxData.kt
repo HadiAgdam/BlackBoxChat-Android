@@ -10,7 +10,8 @@ import ir.hadiagdamapps.blackboxchat.data.database.DatabaseHelper
 import ir.hadiagdamapps.blackboxchat.data.database.Table
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.e2e.E2EKeyGenerator
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.e2e.E2EKeyGenerator.toText
-import ir.hadiagdamapps.blackboxchat.data.database.Column
+import ir.hadiagdamapps.blackboxchat.data.database.generateWhereQuery
+import ir.hadiagdamapps.blackboxchat.data.database.getBoolean
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
 import ir.hadiagdamapps.blackboxchat.data.models.PrivateKey
@@ -73,30 +74,21 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
     }
 
     fun getInboxes(
-        where: HashMap<Column, String>? = null
+        where: HashMap<InboxColumns, String>? = null
     ): List<InboxModel> {
-
-        val whereClause = if (where != null) {
-            """
-                WHERE (${where.keys.joinToString(" AND ") { "${it.columnName} = ?" }})
-            """.trimIndent()
-        }
-        else ""
-
-
 
         val c = readableDatabase.rawQuery(
             """
             SELECT
-            $INBOX_ID,
-            $INBOX_PUBLIC_KEY,
-            $INBOX_PRIVATE_KEY,
-            $LABEL,
-            $HAS_NEW_MESSAGE,
-            $IV,
-            $SALT
+                $INBOX_ID,
+                $INBOX_PUBLIC_KEY,
+                $INBOX_PRIVATE_KEY,
+                $LABEL,
+                $HAS_NEW_MESSAGE,
+                $IV,
+                $SALT
             from ${table.tableName}
-            $whereClause
+            ${generateWhereQuery(where)}
             
         """.trimIndent(), where?.values?.toTypedArray()
         )
@@ -110,7 +102,7 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
                         inboxPublicKey = PublicKey.parse(c.getString(1)) ?: continue,
                         inboxPrivateKey = PrivateKey.parse(c.getString(2)) ?: continue,
                         label = Label.create(c.getString(3)) ?: continue,
-                        hasNewMessage = c.getInt(4) == 1,
+                        hasNewMessage = c.getBoolean(4),
                         iv = c.getString(5),
                         salt = c.getString(6)
                     )
