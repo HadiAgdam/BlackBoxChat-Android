@@ -11,7 +11,7 @@ import ir.hadiagdamapps.blackboxchat.data.database.getBoolean
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationEncryptedModel
 
-class ConversationData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
+class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERSATIONS) {
 
     fun getConversations(
         where: HashMap<ConversationColumns, String>? = null

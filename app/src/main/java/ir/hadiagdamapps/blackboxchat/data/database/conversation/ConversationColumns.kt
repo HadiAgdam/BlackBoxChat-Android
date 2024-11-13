@@ -4,7 +4,7 @@ import ir.hadiagdamapps.blackboxchat.data.database.Column
 
 enum class ConversationColumns (override val definition: String): Column {
 
-    CONVERSATION_ID("INTEGER PRIMARY KET AUTOINCREMENT"),
+    CONVERSATION_ID("INTEGER PRIMARY KEY AUTOINCREMENT"),
     INBOX_ID("INTEGER"),
     PUBLIC_KEY("TEXT"), // encrypted
     LABEL("TEXT"), // encrypted
