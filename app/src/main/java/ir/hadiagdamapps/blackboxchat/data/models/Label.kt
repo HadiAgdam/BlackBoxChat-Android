@@ -7,11 +7,9 @@ import androidx.core.util.toHalf
 class Label private constructor(private val text: String) {
 
     companion object {
-        private const val MAX_LENGTH = 30
-        private val INVALID_CHARS_REGEX = Regex("[^a-zA-Z0-9/+]") // adjust as needed
 
         fun create(publicKey: PublicKey): Label {
-            return Label(publicKey.display().substring(30, 60))
+            return Label(publicKey.display().substring(32, publicKey.display().length - 1)) // temp
         }
 
         fun create(text: String): Label? {
@@ -19,7 +17,7 @@ class Label private constructor(private val text: String) {
         }
 
         fun isValid(text: String): Boolean {
-            return text.length <= MAX_LENGTH && !text.contains(INVALID_CHARS_REGEX)
+            return true
         }
     }
 

@@ -2,7 +2,7 @@ package ir.hadiagdamapps.blackboxchat.ui.viewmodels
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,19 +15,20 @@ import ir.hadiagdamapps.blackboxchat.data.Clipboard
 import ir.hadiagdamapps.blackboxchat.data.ConversationHandler
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
+import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationModel
 import ir.hadiagdamapps.blackboxchat.data.qr.QrCodeGenerator
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
 
 class ConversationsScreenViewmodel(
-    context: Context,
-    private val navController: NavController,
-    private val args: ConversationsRoute
+    context: Context, private val navController: NavController, private val args: ConversationsRoute
 ) : ViewModel() {
 
     private val conversationHandler = ConversationHandler(context)
     private val qrCodeGenerator = QrCodeGenerator()
     private val clipboard = Clipboard(context)
+
+    private var pin: Pin? = null
 
     private val _conversations = mutableStateListOf<ConversationModel>()
     val conversations: SnapshotStateList<ConversationModel> = _conversations
@@ -49,6 +50,12 @@ class ConversationsScreenViewmodel(
     var pinDialogContent by mutableStateOf("")
         private set
     var pinDialogError by mutableStateOf("")
+        private set
+
+    var showNewConversationDialog by mutableStateOf(false)
+        private set
+
+    var showInvalidClipboard by mutableStateOf(false)
         private set
 
     //----------------------------------------------------------------------------------------------
@@ -79,8 +86,8 @@ class ConversationsScreenViewmodel(
     fun detailsLabelChange(newLabel: String) {
         if (Label.isValid(newLabel)) detailsDialogLabel = newLabel
         _conversations.forEachIndexed { index, conversationModel ->
-            if (conversationModel.conversationId == selectedConversationId)
-                _conversations[index] = _conversations[index].copy(label = Label.create(newLabel)!!)
+            if (conversationModel.conversationId == selectedConversationId) _conversations[index] =
+                _conversations[index].copy(label = Label.create(newLabel)!!)
         }
     }
 
@@ -106,7 +113,8 @@ class ConversationsScreenViewmodel(
     }
 
     fun pinDialogSubmit() {
-        val pin = Pin.parse(pinDialogContent)
+        pin = Pin.parse(pinDialogContent)
+        pinDialogContent = ""
 
         if (pin == null) {
             pinDialogError = "invalid pin"
@@ -118,17 +126,58 @@ class ConversationsScreenViewmodel(
             try {
 
                 conversationHandler.loadConversations(
-                    inboxId = args.inboxId,
-                    pin = pin
+                    inboxId = args.inboxId, pin = pin!!
                 ).forEach {
                     _conversations.add(it)
                 }
 
             } catch (ex: Exception) {
+                Log.e("backstack", ex.toString())
                 navController.popBackStack()
             }
 
         }
     }
+
+
+    //----------------------------------------------------------------------------------------------
+
+    fun newConversationClick() {
+        showNewConversationDialog = true
+    }
+
+    fun dismissDialogs() {
+        showNewConversationDialog = false
+    }
+
+    fun newConversationFromClipboard() {
+        showNewConversationDialog = false
+
+        try {
+        clipboard.readClipboard()?.let {
+            PublicKey.parse(it)
+        }?.apply {
+            _conversations.add(
+                conversationHandler.newConversation(this, pin!!, args.inboxId)
+            )
+        } ?: run {
+            showInvalidClipboard = true
+        }}
+        catch (ex: Exception) {
+            showInvalidClipboard = true
+        }
+    }
+
+    fun newConversationFromQrCode() {
+        showNewConversationDialog = false
+        // TODO
+    }
+
+
+    //----------------------------------------------------------------------------------------------
+
+
+    // TODO poll updates
+    // I am thinking about making a class handling almost everything and just calling updates
 
 }

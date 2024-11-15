@@ -1,6 +1,7 @@
 package ir.hadiagdamapps.blackboxchat.data
 
 import android.content.Context
+import android.util.Log
 import ir.hadiagdamapps.blackboxchat.data.database.inbox.InboxData
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
@@ -22,6 +23,7 @@ class InboxHandler(context: Context) {
 
     fun getInboxes(): List<InboxPreviewModel> =
         data.getInboxes().map {
+            Log.e("label", it.label.display())
             it.toPreviewModel()
         }
 

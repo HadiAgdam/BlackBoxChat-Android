@@ -28,6 +28,7 @@ fun Screen(
     iconClick: () -> Unit = {},
     iconTint: Color = Color.White,
     fabClick: (() -> Unit)? = null,
+    snackBarHost: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
 
@@ -36,7 +37,10 @@ fun Screen(
         TopBar(
             title = title, icon = icon, iconClick = iconClick, iconTint = iconTint
         )
+
     },
+        snackbarHost = snackBarHost,
+
         content = { padding ->
 
             Surface(

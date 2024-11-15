@@ -3,6 +3,7 @@ package ir.hadiagdamapps.blackboxchat.data.database.inbox
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import ir.hadiagdamapps.blackboxchat.data.Error
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
@@ -93,6 +94,7 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
         """.trimIndent(), where?.values?.toTypedArray()
         )
 
+        Log.e("cursor size", c.count.toString())
         return ArrayList<InboxModel>().apply {
 
             if (c.moveToFirst()) do

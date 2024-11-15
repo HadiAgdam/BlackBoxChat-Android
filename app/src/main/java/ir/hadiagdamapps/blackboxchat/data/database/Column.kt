@@ -7,6 +7,13 @@ interface Column {
     val definition: String
 }
 
-fun ContentValues.put(key: Column, text: String) {
-    put(key.columnName, text)
-}
+fun ContentValues.put(key: Column, text: String) =
+    this.put(key.columnName, text)
+
+
+fun ContentValues.put(key: Column, bool: Boolean) =
+    this.put(key.columnName, bool)
+
+fun ContentValues.put(key: Column, long: Long) =
+    this.put(key.columnName, long)
+
