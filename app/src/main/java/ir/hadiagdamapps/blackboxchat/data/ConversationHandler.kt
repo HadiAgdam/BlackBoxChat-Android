@@ -89,4 +89,18 @@ class ConversationHandler(
         )
     }
 
+    fun updateLabel(newLabel: Label, pin: Pin, conversationId: Long) {
+        AesEncryptor.encryptMessage(
+            newLabel.display(), AesKeyGenerator.generateKey(
+                pin.toString(),
+                data.getSalt(conversationId) ?: throw Error.CONVERSATION_ID_NOT_FOUND
+            )
+        ).apply {
+            data.updateLabel(
+                conversationId = conversationId,
+                newLabel = first,
+                newLabelIv = second
+            )
+        }
+    }
 }

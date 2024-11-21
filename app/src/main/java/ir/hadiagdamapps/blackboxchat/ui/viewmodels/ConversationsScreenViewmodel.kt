@@ -87,7 +87,9 @@ class ConversationsScreenViewmodel(
         if (Label.isValid(newLabel)) detailsDialogLabel = newLabel
         _conversations.forEachIndexed { index, conversationModel ->
             if (conversationModel.conversationId == selectedConversationId) _conversations[index] =
-                _conversations[index].copy(label = Label.create(newLabel)!!)
+                _conversations[index].copy(label = Label.create(newLabel)!!).apply {
+                    conversationHandler.updateLabel(label, pin!!, conversationId) // not sure
+                }
         }
     }
 
@@ -154,16 +156,16 @@ class ConversationsScreenViewmodel(
         showNewConversationDialog = false
 
         try {
-        clipboard.readClipboard()?.let {
-            PublicKey.parse(it)
-        }?.apply {
-            _conversations.add(
-                conversationHandler.newConversation(this, pin!!, args.inboxId)
-            )
-        } ?: run {
-            showInvalidClipboard = true
-        }}
-        catch (ex: Exception) {
+            clipboard.readClipboard()?.let {
+                PublicKey.parse(it)
+            }?.apply {
+                _conversations.add(
+                    conversationHandler.newConversation(this, pin!!, args.inboxId)
+                )
+            } ?: run {
+                showInvalidClipboard = true
+            }
+        } catch (ex: Exception) {
             showInvalidClipboard = true
         }
     }

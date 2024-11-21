@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import ir.hadiagdamapps.blackboxchat.data.database.DatabaseHelper
 import ir.hadiagdamapps.blackboxchat.data.database.Table
+import ir.hadiagdamapps.blackboxchat.data.database.asWhereQuery
 import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationColumns.*
 import ir.hadiagdamapps.blackboxchat.data.database.generateWhereQuery
 import ir.hadiagdamapps.blackboxchat.data.database.getBoolean
@@ -13,7 +14,7 @@ import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationEncryp
 
 class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERSATIONS) {
 
-    fun getConversations(
+    private fun getConversations(
         where: HashMap<ConversationColumns, String>? = null
     ): List<ConversationEncryptedModel> {
         val c = readableDatabase.rawQuery(
@@ -30,8 +31,7 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
                 ${generateWhereQuery(where)}
                 
                 
-            """.trimIndent().apply { Log.e("query", this) },
-            where?.values?.toTypedArray()
+            """.trimIndent().apply { Log.e("query", this) }, where?.values?.toTypedArray()
         )
 
 
@@ -40,26 +40,23 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
 
         return ArrayList<ConversationEncryptedModel>().apply {
 
-            if (c.moveToFirst()) do
-                add(
-                    ConversationEncryptedModel(
-                        conversationId = c.getLong(0),
-                        publicKeyEncrypted = c.getString(1),
-                        labelEncrypted = c.getString(2),
-                        hasNewMessage = c.getBoolean(3),
-                        publicKeyIv = c.getString(4),
-                        labelIv = c.getString(5),
-                        salt = c.getString(6)
-                    ).apply {
-                        Log.e("id", this.conversationId.toString())
-                        Log.e("public key", this.publicKeyEncrypted)
-                        Log.e("label", this.labelEncrypted)
-                        Log.e("has new message", this.hasNewMessage.toString())
-                        Log.e("p iv", this.publicKeyIv)
-                        Log.e("l iv", this.labelIv)
-                        Log.e("salt", this.salt)
-                    }
-                )
+            if (c.moveToFirst()) do add(ConversationEncryptedModel(
+                conversationId = c.getLong(0),
+                publicKeyEncrypted = c.getString(1),
+                labelEncrypted = c.getString(2),
+                hasNewMessage = c.getBoolean(3),
+                publicKeyIv = c.getString(4),
+                labelIv = c.getString(5),
+                salt = c.getString(6)
+            ).apply {
+                Log.e("id", this.conversationId.toString())
+                Log.e("public key", this.publicKeyEncrypted)
+                Log.e("label", this.labelEncrypted)
+                Log.e("has new message", this.hasNewMessage.toString())
+                Log.e("p iv", this.publicKeyIv)
+                Log.e("l iv", this.labelIv)
+                Log.e("salt", this.salt)
+            })
             while (c.moveToNext())
 
             close()
@@ -88,20 +85,38 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
     }
 
     fun insert(model: ConversationEncryptedModel, inboxId: Long): Long {
-        return writableDatabase.insert(table.tableName,
-            null,
-            ContentValues().apply {
-                put(PUBLIC_KEY, model.publicKeyEncrypted)
-                put(INBOX_ID, inboxId)
-                put(LABEL, model.labelEncrypted)
-                put(HAS_NEW_MESSAGE, model.hasNewMessage)
-                put(PUBLIC_KEY_IV, model.publicKeyIv.apply {
-                    Log.e("inserted public key iv", model.publicKeyIv)
-                })
-                put(LABEL_IV, model.labelIv)
-                put(SALT, model.salt)
-            }
-        )
+        return writableDatabase.insert(table.tableName, null, ContentValues().apply {
+            put(PUBLIC_KEY, model.publicKeyEncrypted)
+            put(INBOX_ID, inboxId)
+            put(LABEL, model.labelEncrypted)
+            put(HAS_NEW_MESSAGE, model.hasNewMessage)
+            put(PUBLIC_KEY_IV, model.publicKeyIv.apply {
+                Log.e("inserted public key iv", model.publicKeyIv)
+            })
+            put(LABEL_IV, model.labelIv)
+            put(SALT, model.salt)
+        })
+    }
+
+    fun updateLabel(
+        conversationId: Long, newLabel: String, newLabelIv: String
+    ) {
+        update(hashMapOf(CONVERSATION_ID to conversationId.toString()),
+            values = ContentValues().apply {
+                put(LABEL, newLabel)
+                put(LABEL_IV, newLabelIv)
+            })
+    }
+
+
+    fun getSalt(conversationId: Long): String? {
+        readableDatabase.rawQuery(
+            "SELECT $SALT from ${table.tableName} where $CONVERSATION_ID = ?",
+            arrayOf(conversationId.toString())
+        ).apply {
+            return if (this.moveToFirst()) this.getString(0)
+            else null
+        }
     }
 
 }
