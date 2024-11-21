@@ -1,10 +1,8 @@
 package ir.hadiagdamapps.blackboxchat.data
 
 import android.content.Context
-import android.util.Log
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
-import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationColumns
 import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationData
 import ir.hadiagdamapps.blackboxchat.data.database.inbox.InboxColumns
 import ir.hadiagdamapps.blackboxchat.data.database.inbox.InboxData
@@ -18,11 +16,11 @@ class ConversationHandler(
     context: Context
 ) {
 
-    val data = ConversationData(context)
-    val inboxData = InboxData(context)
+    private val data = ConversationData(context)
+    private val inboxData = InboxData(context)
 
     fun loadConversations(inboxId: Long, pin: Pin): List<ConversationModel> {
-        return data.getConversations(where = hashMapOf(ConversationColumns.INBOX_ID to inboxId.toString()))
+        return data.getConversationsByInboxId(inboxId)
             .mapNotNull {
 
                 val key = AesKeyGenerator.generateKey(pin.toString(), it.salt)
@@ -44,10 +42,10 @@ class ConversationHandler(
     }
 
     fun delete(inboxId: Long) {
-        data.delete(inboxId)
+        data.deleteByConversationId(inboxId)
     }
 
-    fun getPublicKeyByInboxId(inboxId: Long): PublicKey? {
+    private fun getPublicKeyByInboxId(inboxId: Long): PublicKey? {
         inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString())).apply {
             return if (this.isEmpty()) null
             else this[0].inboxPublicKey
@@ -56,7 +54,7 @@ class ConversationHandler(
 
     fun newConversation(publicKey: PublicKey, pin: Pin, inboxId: Long): ConversationModel {
 
-        if(getPublicKeyByInboxId(inboxId) == publicKey)
+        if (getPublicKeyByInboxId(inboxId) == publicKey)
             throw Error.SAME_PUBLIC_KEY_CONVERSATION
 
         val salt = AesKeyGenerator.generateSalt()

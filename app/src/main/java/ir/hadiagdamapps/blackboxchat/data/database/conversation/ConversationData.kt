@@ -78,10 +78,14 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
         )
     }
 
-    fun delete(conversationId: Long) {
+
+    fun deleteByConversationId(conversationId: Long) {
         delete(where = hashMapOf(CONVERSATION_ID to conversationId.toString()))
     }
 
+    fun getConversationsByInboxId(inboxId: Long): List<ConversationEncryptedModel> {
+        return getConversations(where = hashMapOf(INBOX_ID to inboxId.toString()))
+    }
 
     fun insert(model: ConversationEncryptedModel, inboxId: Long): Long {
         return writableDatabase.insert(table.tableName,
