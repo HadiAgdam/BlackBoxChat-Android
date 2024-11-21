@@ -66,8 +66,8 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
         }
     }
 
-    private fun delete(where: HashMap<ConversationColumns, String>) {
-        writableDatabase.delete(table.tableName, where.keys.joinToString(" AND ") { "${it.columnName} = ?" }, where.values.toTypedArray())
+    private fun delete(where: HashMap<ConversationColumns, String>): Int {
+        return writableDatabase.delete(table.tableName, where.asWhereQuery(), where.values.toTypedArray())
     }
 
     fun delete(conversationId: Long) {
