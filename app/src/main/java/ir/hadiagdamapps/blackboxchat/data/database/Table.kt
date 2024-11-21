@@ -29,3 +29,7 @@ enum class Table
 inline fun <reified T> Array<out T>.asQuery(): String where T : Enum<T>, T : Column {
     return this.joinToString(separator = ",\n") { "${it.columnName} ${it.definition}" }
 }
+
+fun  <T: HashMap<ConversationColumns, String>> T.asWhereQuery() : String {
+    return this.keys.joinToString(separator = "AND") { "${it.columnName} = ?" }
+}
