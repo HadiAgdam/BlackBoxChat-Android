@@ -23,7 +23,7 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
                     $PUBLIC_KEY,
                     $LABEL,
                     $HAS_NEW_MESSAGE,
-                    $PUBLIC_KEY,
+                    $PUBLIC_KEY_IV,
                     $LABEL_IV,
                     $SALT
                 from ${table.tableName}
@@ -83,7 +83,9 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
                 put(INBOX_ID, inboxId)
                 put(LABEL, model.labelEncrypted)
                 put(HAS_NEW_MESSAGE, model.hasNewMessage)
-                put(PUBLIC_KEY_IV, model.publicKeyIv)
+                put(PUBLIC_KEY_IV, model.publicKeyIv.apply {
+                    Log.e("inserted public key iv", model.publicKeyIv)
+                })
                 put(LABEL_IV, model.labelIv)
                 put(SALT, model.salt)
             }
