@@ -2,6 +2,7 @@ package ir.hadiagdamapps.blackboxchat.data.database
 
 import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationColumns
 import ir.hadiagdamapps.blackboxchat.data.database.inbox.InboxColumns
+import ir.hadiagdamapps.blackboxchat.data.database.message.MessageColumns
 import kotlin.enums.EnumEntries
 
 enum class Table
@@ -17,7 +18,13 @@ enum class Table
     CONVERSATIONS(
         tableName = "conversations",
         columnsAsQuery = ConversationColumns.entries.toTypedArray().asQuery()
-    )
+    ),
+
+    MESSAGES(
+        tableName = "messages",
+        columnsAsQuery = MessageColumns.entries.toTypedArray().asQuery()
+    ),
+
     ;
 
     val createQuery = "CREATE TABLE $tableName ($columnsAsQuery) "
