@@ -103,4 +103,8 @@ class ConversationHandler(
             )
         }
     }
+
+    fun getConversationByPublicKey(publicKey: PublicKey): ConversationModel? {
+        TODO()
+    }
 }
