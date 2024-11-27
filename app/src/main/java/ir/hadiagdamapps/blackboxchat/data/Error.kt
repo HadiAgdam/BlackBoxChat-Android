@@ -8,5 +8,6 @@ object Error {
     val CONVERSATION_ID_NOT_FOUND = Exception("Could not find conversation with conversationId")
     val INVALID_JSON = Exception("Invalid json content")
     val INVALID_PUBLIC_KEY = Exception("Invalid public key")
+    val NOT_UNIQUE_MESSAGE_ID = Exception("MessageId is should be unique.")
 }
 

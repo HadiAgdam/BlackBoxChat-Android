@@ -84,7 +84,7 @@ abstract class MessageReceiver(
             iv = encryptedText.second
         )
 
-        messageData.insert(encryptedLocalMessage)
+        messageData.newMessage(encryptedLocalMessage)
 
 
 
