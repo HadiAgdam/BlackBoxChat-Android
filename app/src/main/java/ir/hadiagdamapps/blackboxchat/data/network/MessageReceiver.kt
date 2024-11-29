@@ -104,16 +104,19 @@ abstract class MessageReceiver(
     }
 
     private fun poll(newMessage: (IncomingMessage) -> Unit, failed: (VolleyError) -> Unit) {
-        queue.add(object : StringRequest(Method.GET, baseUrl, { response: String ->
-
-            JSONArray(response).apply {
-                for (i in 0 until length()) newMessage(IncomingMessage.fromJson(getJSONObject(i)))
-            }
-
-        }, failed) {
-            override fun getParams(): MutableMap<String, String> =
-                hashMapOf("publicKey" to inboxModel.inboxPublicKey.display())
-        })
+        queue.add(
+            StringRequest(Request.Method.GET, Uri.parse("$baseUrl/get_message").buildUpon()?.apply {
+                appendQueryParameter("publicKey", inboxModel.inboxPublicKey.display())
+                appendQueryParameter("messageId", inboxModel.lastMessageId.toString())
+            }?.build().toString().apply {
+                Log.e("request", this)
+            }, { response: String ->
+                Log.e("receiver volley response", response)
+                JSONArray(response).apply {
+                    for (i in 0 until length()) newMessage(IncomingMessage.fromJson(getJSONObject(i)))
+                }
+            }, failed)
+        )
     }
 
     private suspend fun loop() {
