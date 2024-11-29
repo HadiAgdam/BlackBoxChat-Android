@@ -87,7 +87,8 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
                 $LABEL,
                 $HAS_NEW_MESSAGE,
                 $IV,
-                $SALT
+                $SALT,
+                $LAST_MESSAGE_ID
             from ${table.tableName}
             ${generateWhereQuery(where)}
             
@@ -106,7 +107,8 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
                         label = Label.create(c.getString(3)) ?: continue,
                         hasNewMessage = c.getBoolean(4),
                         iv = c.getString(5),
-                        salt = c.getString(6)
+                        salt = c.getString(6),
+                        lastMessageId = c.getLong(7)
                     )
                 )
             while (c.moveToNext())

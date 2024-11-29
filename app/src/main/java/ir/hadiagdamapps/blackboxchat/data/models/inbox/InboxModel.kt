@@ -12,4 +12,5 @@ data class InboxModel(
     val hasNewMessage: Boolean,
     val iv: String,
     val salt: String,
+    val lastMessageId: Long = 0
 )

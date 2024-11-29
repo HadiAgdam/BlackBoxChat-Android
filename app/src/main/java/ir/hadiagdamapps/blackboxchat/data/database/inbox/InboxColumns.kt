@@ -12,7 +12,8 @@ enum class InboxColumns(override val definition: String) : Column {
     LABEL("TEXT"),
     HAS_NEW_MESSAGE("BOOLEAN"),
     IV("TEXT"),
-    SALT("TEXT")
+    SALT("TEXT"),
+    LAST_MESSAGE_ID("INTEGER DEFAULT 0"),
     ;
 
     override val columnName: String = name.lowercase()
