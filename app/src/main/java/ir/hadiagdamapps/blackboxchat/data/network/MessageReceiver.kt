@@ -46,7 +46,7 @@ abstract class MessageReceiver(
     private val messageData = MessageData(context)
     private val aesKey = AesKeyGenerator.generateKey(inboxPin.toString(), salt)
     private val baseUrl =
-        "https://hadiagdam0.pythonanywhere.com/api/" // I know it should not be hardcoded
+        "https://hadiagdam0.pythonanywhere.com/api" // I know it should not be hardcoded
 
     private var inboxModel =
         inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString()))
