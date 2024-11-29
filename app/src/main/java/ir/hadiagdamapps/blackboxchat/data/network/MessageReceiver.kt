@@ -88,12 +88,19 @@ abstract class MessageReceiver(
 
 
 
-        onReceived(LocalMessage(
-            messageId = message.messageId,
-            conversationId = conversation.conversationId,
-            text = content.text,
-            sent = false
-        ))
+        onReceived(
+            LocalMessage(
+                messageId = message.messageId,
+                conversationId = conversation.conversationId,
+                text = content.text,
+                sent = false
+            )
+        )
+
+        if (message.messageId > inboxModel.lastMessageId) {
+            inboxModel = inboxModel.copy(lastMessageId = message.messageId)
+            inboxData.updateLastMessageId(inboxModel.inboxId, message.messageId)
+        }
     }
 
     private fun poll(newMessage: (IncomingMessage) -> Unit, failed: (VolleyError) -> Unit) {
