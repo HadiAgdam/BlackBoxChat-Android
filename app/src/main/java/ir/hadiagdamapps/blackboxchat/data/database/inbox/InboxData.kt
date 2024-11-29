@@ -121,9 +121,24 @@ class InboxData(context: Context) : DatabaseHelper(context, Table.INBOXES) {
         writableDatabase.delete(table.tableName, "$INBOX_ID = ?", arrayOf(inboxId.toString()))
     }
 
+    private fun updateInbox(values: ContentValues, inboxId: Long) {
+        writableDatabase.update(
+            table.tableName,
+            values,
+            "$INBOX_ID = ?",
+            arrayOf(inboxId.toString())
+        )
+    }
+
     fun updateLabel(label: Label, inboxId: Long) {
-        writableDatabase.update(table.tableName, ContentValues().apply {
+        updateInbox(ContentValues().apply {
             put(LABEL, label.display())
-        }, "$INBOX_ID = ?", arrayOf(inboxId.toString()))
+        }, inboxId)
+    }
+
+    fun updateLastMessageId(inboxId: Long, newLastMessageId: Long) {
+        updateInbox(ContentValues().apply {
+            put(LAST_MESSAGE_ID, newLastMessageId)
+        }, inboxId)
     }
 }
