@@ -27,10 +27,14 @@ abstract class MessageReceiver(
     context: Context,
     private val inboxId: Long,
     private val inboxPrivateKey: PrivateKey,
-    private val inboxPin: Pin,
+    private var inboxPin: Pin?,
     salt: String
 
 ) {
+
+    fun setPin(pin: Pin) {
+        inboxPin = pin
+    }
 
     private var isLooping = false
     private val queue = MessengerApp.queue!!
@@ -41,8 +45,9 @@ abstract class MessageReceiver(
     private val baseUrl =
         "https://hadiagdam0.pythonanywhere.com/api/" // I know it should not be hardcoded
 
-    private val inboxModel = inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString()))
-        .first { it.inboxId == inboxId }
+    private var inboxModel =
+        inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString()))
+            .first { it.inboxId == inboxId }
 
 
     abstract fun newConversation(conversationModel: ConversationModel)
@@ -65,9 +70,7 @@ abstract class MessageReceiver(
 
         val conversation = conversationHandler.getConversationByPublicKey(content.senderPublicKey)
             ?: conversationHandler.newConversation(
-                publicKey = content.senderPublicKey,
-                pin = inboxPin,
-                inboxId = inboxId
+                publicKey = content.senderPublicKey, pin = inboxPin!!, inboxId = inboxId
             ).apply {
                 newConversation(this)
             }
