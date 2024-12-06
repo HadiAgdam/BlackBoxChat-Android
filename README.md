@@ -120,4 +120,3 @@ This is my **first app using Jetpack Compose**, and I’m actively learning thro
 
 Contributions and suggestions are welcome! Feel free to fork this repository or open an issue.  
 
----
