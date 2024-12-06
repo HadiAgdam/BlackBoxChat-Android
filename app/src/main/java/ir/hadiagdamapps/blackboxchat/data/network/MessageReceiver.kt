@@ -24,7 +24,10 @@ import ir.hadiagdamapps.blackboxchat.data.models.message.EncryptedLocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.IncomingMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.MessageContent
-import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.Random
 
 abstract class MessageReceiver(
     context: Context,
@@ -39,14 +42,14 @@ abstract class MessageReceiver(
         inboxPin = pin
     }
 
-    private var isLooping = false
-    private val queue = MessengerApp.queue!!
+    private val mockPublicKey =
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9WpEM40cKejzcg2aHWjcCnHMqVJYf05CT8qq+v0AbICyVNtEOW/bPEVnPGuezUu1Y1YIYDlliEfzgYFGGDRZPQ=="
+    private val sdf = SimpleDateFormat("dd hh:mm ss", Locale.getDefault())
+    private var isLooping: Boolean = false
     private val conversationHandler = ConversationHandler(context)
     private val inboxData = InboxData(context)
     private val messageData = MessageData(context)
     private val aesKey = AesKeyGenerator.generateKey(inboxPin.toString(), salt)
-    private val baseUrl =
-        "https://hadiagdam0.pythonanywhere.com/api" // I know it should not be hardcoded
 
     private var inboxModel =
         inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString()))
@@ -110,19 +113,39 @@ abstract class MessageReceiver(
     }
 
     private fun poll(newMessage: (IncomingMessage) -> Unit, failed: (VolleyError) -> Unit) {
-        queue.add(
-            StringRequest(Request.Method.GET, Uri.parse("$baseUrl/get_message").buildUpon()?.apply {
-                appendQueryParameter("publicKey", inboxModel.inboxPublicKey.display())
-                appendQueryParameter("messageId", inboxModel.lastMessageId.toString())
-            }?.build().toString().apply {
-                Log.e("request", this)
-            }, { response: String ->
-                Log.e("receiver volley response", response)
-                JSONArray(response).apply {
-                    for (i in 0 until length()) newMessage(IncomingMessage.fromJson(getJSONObject(i)))
-                }
-            }, failed)
+
+        Thread.sleep(5000)
+
+        Random().apply {
+            if (nextBoolean() && nextBoolean()) { // 1/4 chance
+                failed(VolleyError())
+                return
+            }
+        }
+
+        val aesKey = AesKeyGenerator.generateKey()
+        val encryptionKey = E2EEncryptor.encryptAESKeyWithPublicKey(
+            aesKey, E2EKeyGenerator.getPublicKeyFromString(inboxModel.inboxPublicKey.display())
         )
+
+
+        val encryptedMessage = AesEncryptor.encryptMessage(
+            """
+            {
+                "sender_public_key": "$mockPublicKey",
+                "text": "Hello !${sdf.format(Date())}" 
+            }
+        """.trimIndent(), aesKey
+        )
+
+
+        val message = IncomingMessage(
+            messageId = inboxModel.lastMessageId,
+            encryptionKey = encryptionKey,
+            encryptedMessage = encryptedMessage.first,
+            iv = encryptedMessage.second
+        )
+        newMessage(message)
     }
 
     private suspend fun loop() {
