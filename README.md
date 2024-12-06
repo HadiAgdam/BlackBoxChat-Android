@@ -66,7 +66,7 @@ This design allows for queries to be generated dynamically:
 
 ```kotlin
 fun <T : Column> generateWhereQuery(where: HashMap<T, String>?): String {
-    return where?.let { "WHERE (${it.keys.joinToString(" AND ") { "${it.columnName} = ?" }})" } ?: ""
+    return where?.let { w -> "WHERE (${w.keys.joinToString(" AND ") { column -> "${column.columnName} = ?" }})" } ?: ""
 }
 ```
 
