@@ -22,6 +22,7 @@ import ir.hadiagdamapps.blackboxchat.data.models.Pin
 import ir.hadiagdamapps.blackboxchat.data.models.PrivateKey
 import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationModel
+import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxModel
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.network.MessageReceiver
 import ir.hadiagdamapps.blackboxchat.data.qr.QrCodeGenerator
@@ -35,7 +36,12 @@ class ConversationsScreenViewmodel(
     private val conversationHandler = ConversationHandler(context)
     private val qrCodeGenerator = QrCodeGenerator()
     private val clipboard = Clipboard(context)
-    private var inbox = InboxHandler(context).getInboxById(args.inboxId)
+    private var inbox: InboxModel = InboxHandler(context).getInboxById(args.inboxId).let {
+        if (it == null) {
+            navController.popBackStack()
+        }
+        it!! // unreachable
+    }
     private val messageReceiver = object : MessageReceiver(
         context = context,
         inboxId = inbox.inboxId,
