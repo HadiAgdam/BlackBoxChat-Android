@@ -67,15 +67,14 @@ class ConversationHandler(
         )
 
         val (encryptedLabel, labelIv) = AesEncryptor.encryptMessage(
-            message = label.display(),
-            aesKey = key
+            message = label.display(), aesKey = key
         )
 
         val model = ConversationEncryptedModel(
             conversationId = -1,
             publicKeyEncrypted = encryptedPublicKey,
             labelEncrypted = encryptedLabel,
-            hasNewMessage = false,
+            hasNewMessage = true,
             publicKeyIv = publicKeyIv,
             labelIv = labelIv,
             salt = salt
@@ -85,7 +84,7 @@ class ConversationHandler(
             conversationId = data.insert(model, inboxId),
             publicKey = publicKey,
             label = label,
-            hasNewMessage = false
+            hasNewMessage = true
         )
     }
 
