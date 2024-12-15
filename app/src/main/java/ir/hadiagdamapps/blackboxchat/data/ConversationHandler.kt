@@ -19,26 +19,23 @@ class ConversationHandler(
     private val data = ConversationData(context)
     private val inboxData = InboxData(context)
 
+    private fun ConversationEncryptedModel.decryptConversation(pin: Pin): ConversationModel? {
+        AesKeyGenerator.generateKey(pin.toString(), salt).apply {
+            return ConversationModel(
+                conversationId = conversationId, publicKey = PublicKey.parse(
+                    AesEncryptor.decryptMessage(publicKeyEncrypted, this, publicKeyIv)
+                        ?: return null
+                ) ?: return null, label = Label.create(
+                    AesEncryptor.decryptMessage(labelEncrypted, this, labelIv) ?: return null
+                ) ?: return null, hasNewMessage = hasNewMessage
+            )
+        }
+    }
+
     fun loadConversations(inboxId: Long, pin: Pin): List<ConversationModel> {
-        return data.getConversationsByInboxId(inboxId)
-            .mapNotNull {
-
-                val key = AesKeyGenerator.generateKey(pin.toString(), it.salt)
-
-                val publicKeyText =
-                    AesEncryptor.decryptMessage(it.publicKeyEncrypted, key, it.publicKeyIv)
-                        ?: return@mapNotNull null
-                val labelText =
-                    AesEncryptor.decryptMessage(it.labelEncrypted, key, it.labelIv)
-                        ?: return@mapNotNull null
-
-                ConversationModel(
-                    conversationId = it.conversationId,
-                    publicKey = PublicKey.parse(publicKeyText) ?: return@mapNotNull null,
-                    label = Label.create(labelText) ?: return@mapNotNull null,
-                    hasNewMessage = it.hasNewMessage
-                )
-            }
+        return data.getConversationsByInboxId(inboxId).mapNotNull {
+            it.decryptConversation(pin)
+        }
     }
 
     fun delete(inboxId: Long) {
