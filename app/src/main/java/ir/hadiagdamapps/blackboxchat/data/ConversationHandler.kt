@@ -1,6 +1,7 @@
 package ir.hadiagdamapps.blackboxchat.data
 
 import android.content.Context
+import android.util.Log
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
 import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationData
@@ -102,6 +103,12 @@ class ConversationHandler(
         }
     }
 
-    fun getConversationByPublicKey(publicKey: PublicKey, pin: Pin): ConversationModel? =
-        data.getConversationByPublicKey(publicKey)?.decryptConversation(pin)
+    fun getConversationByPublicKey(
+        publicKey: PublicKey,
+        pin: Pin,
+        inboxId: Long
+    ): ConversationModel? =
+        loadConversations(inboxId, pin).firstOrNull { it.publicKey == publicKey }
+
+
 }
