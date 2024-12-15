@@ -76,12 +76,13 @@ abstract class MessageReceiver(
                 ?: throw Error.INVALID_JSON
         )
 
-        val conversation = conversationHandler.getConversationByPublicKey(content.senderPublicKey)
-            ?: conversationHandler.newConversation(
-                publicKey = content.senderPublicKey, pin = inboxPin!!, inboxId = inboxId
-            ).apply {
-                newConversation(this)
-            }
+        val conversation =
+            conversationHandler.getConversationByPublicKey(content.senderPublicKey, inboxPin!!)
+                ?: conversationHandler.newConversation(
+                    publicKey = content.senderPublicKey, pin = inboxPin!!, inboxId = inboxId
+                ).apply {
+                    newConversation(this)
+                }
 
 
         val encryptedText = AesEncryptor.encryptMessage(content.text, aesKey)
