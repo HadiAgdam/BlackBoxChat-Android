@@ -10,21 +10,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import ir.hadiagdamapps.blackboxchat.data.Clipboard
 import ir.hadiagdamapps.blackboxchat.data.ConversationHandler
 import ir.hadiagdamapps.blackboxchat.data.InboxHandler
+import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
+import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
 import ir.hadiagdamapps.blackboxchat.data.models.ConnectionStatus
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
+import ir.hadiagdamapps.blackboxchat.data.models.PrivateKey
 import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationModel
+import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxModel
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.network.MessageReceiver
 import ir.hadiagdamapps.blackboxchat.data.qr.QrCodeGenerator
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
-import kotlinx.coroutines.launch
 
 class ConversationsScreenViewmodel(
     context: Context, private val navController: NavController, private val args: ConversationsRoute
@@ -34,12 +36,15 @@ class ConversationsScreenViewmodel(
     private val conversationHandler = ConversationHandler(context)
     private val qrCodeGenerator = QrCodeGenerator()
     private val clipboard = Clipboard(context)
-    private val inbox = InboxHandler(context).getInboxById(args.inboxId)
+    private var inbox: InboxModel = InboxHandler(context).getInboxById(args.inboxId).let {
+        if (it == null) {
+            navController.popBackStack()
+        }
+        it!! // unreachable
+    }
     private val messageReceiver = object : MessageReceiver(
         context = context,
         inboxId = inbox.inboxId,
-        inboxPrivateKey = inbox.inboxPrivateKey,
-        inboxPin = pin,
         salt = inbox.salt
     ) {
         override fun newConversation(conversationModel: ConversationModel) {
@@ -156,13 +161,27 @@ class ConversationsScreenViewmodel(
 
             try {
 
+                inbox = inbox.copy(
+                    inboxPrivateKey = PrivateKey.parse(
+                        AesEncryptor.decryptMessage(
+                            inbox.inboxPrivateKey.toString(),
+                            AesKeyGenerator.generateKey(
+                                pin.toString(),
+                                inbox.salt
+                            ),
+                            inbox.iv
+                        ).apply { Log.e("decrypted private key", this.toString()) }
+                            ?: throw Exception("null decrypted message")
+                    )!!
+                )
+
                 conversationHandler.loadConversations(
                     inboxId = args.inboxId, pin = pin!!
                 ).forEach {
                     _conversations.add(it)
                 }
 
-                messageReceiver.setPin(pin!!)
+                messageReceiver.init(inbox.inboxPrivateKey, pin!!)
                 startPolling()
 
             } catch (ex: Exception) {
@@ -211,9 +230,7 @@ class ConversationsScreenViewmodel(
     //----------------------------------------------------------------------------------------------
 
     private fun startPolling() {
-        viewModelScope.launch {
-            messageReceiver.startPolling()
-        }
+        messageReceiver.startPolling()
     }
 
 }

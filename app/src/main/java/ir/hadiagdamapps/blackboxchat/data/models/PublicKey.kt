@@ -23,4 +23,12 @@ class PublicKey private constructor(private val text: String) {
 
     fun display(): String = text
 
+
+    override fun equals(other: Any?): Boolean {
+
+        return if (other is PublicKey)
+            this.text == other.text
+        else
+            false
+    }
 }

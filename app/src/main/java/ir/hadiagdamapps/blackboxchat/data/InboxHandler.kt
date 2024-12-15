@@ -38,8 +38,9 @@ class InboxHandler(context: Context) {
     }
 
 
-    fun getInboxById(inboxId: Long): InboxModel {
-        return data.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString())).first() // I know this is wrong
-    }
+    fun getInboxById(inboxId: Long): InboxModel? =
+        data.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString()))
+            .firstOrNull()
+
 
 }

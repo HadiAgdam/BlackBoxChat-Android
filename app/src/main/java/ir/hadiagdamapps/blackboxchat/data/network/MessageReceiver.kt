@@ -1,12 +1,7 @@
 package ir.hadiagdamapps.blackboxchat.data.network
 
 import android.content.Context
-import android.net.Uri
-import android.util.Log
-import com.android.volley.Request
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import ir.hadiagdamapps.blackboxchat.MessengerApp
 import ir.hadiagdamapps.blackboxchat.data.ConversationHandler
 import ir.hadiagdamapps.blackboxchat.data.Error
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
@@ -24,29 +19,32 @@ import ir.hadiagdamapps.blackboxchat.data.models.message.EncryptedLocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.IncomingMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.MessageContent
-import org.json.JSONArray
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.Random
 
 abstract class MessageReceiver(
-    context: Context,
-    private val inboxId: Long,
-    private val inboxPrivateKey: PrivateKey,
-    private var inboxPin: Pin?,
-    salt: String
+    context: Context, private val inboxId: Long, salt: String
 
 ) {
 
-    fun setPin(pin: Pin) {
-        inboxPin = pin
+    private var inboxPrivateKey: PrivateKey? = null
+    private var inboxPin: Pin? = null
+
+    fun init(inboxPrivateKey: PrivateKey, inboxPin: Pin) { // WTF ?
+        this.inboxPrivateKey = inboxPrivateKey
+        this.inboxPin = inboxPin
     }
 
-    private var isLooping = false
-    private val queue = MessengerApp.queue!!
+    private val mockPublicKey =
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9WpEM40cKejzcg2aHWjcCnHMqVJYf05CT8qq+v0AbICyVNtEOW/bPEVnPGuezUu1Y1YIYDlliEfzgYFGGDRZPQ=="
+    private val sdf = SimpleDateFormat("dd hh:mm ss", Locale.getDefault())
+    private var isLooping: Boolean = false
     private val conversationHandler = ConversationHandler(context)
     private val inboxData = InboxData(context)
     private val messageData = MessageData(context)
     private val aesKey = AesKeyGenerator.generateKey(inboxPin.toString(), salt)
-    private val baseUrl =
-        "https://hadiagdam0.pythonanywhere.com/api" // I know it should not be hardcoded
 
     private var inboxModel =
         inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString()))
@@ -71,12 +69,13 @@ abstract class MessageReceiver(
                 ?: throw Error.INVALID_JSON
         )
 
-        val conversation = conversationHandler.getConversationByPublicKey(content.senderPublicKey)
-            ?: conversationHandler.newConversation(
-                publicKey = content.senderPublicKey, pin = inboxPin!!, inboxId = inboxId
-            ).apply {
-                newConversation(this)
-            }
+        val conversation = conversationHandler.getConversationByPublicKey(
+            content.senderPublicKey, inboxPin!!, inboxId
+        ) ?: conversationHandler.newConversation(
+            publicKey = content.senderPublicKey, pin = inboxPin!!, inboxId = inboxId
+        ).apply {
+            newConversation(this)
+        }
 
 
         val encryptedText = AesEncryptor.encryptMessage(content.text, aesKey)
@@ -110,22 +109,40 @@ abstract class MessageReceiver(
     }
 
     private fun poll(newMessage: (IncomingMessage) -> Unit, failed: (VolleyError) -> Unit) {
-        queue.add(
-            StringRequest(Request.Method.GET, Uri.parse("$baseUrl/get_message").buildUpon()?.apply {
-                appendQueryParameter("publicKey", inboxModel.inboxPublicKey.display())
-                appendQueryParameter("messageId", inboxModel.lastMessageId.toString())
-            }?.build().toString().apply {
-                Log.e("request", this)
-            }, { response: String ->
-                Log.e("receiver volley response", response)
-                JSONArray(response).apply {
-                    for (i in 0 until length()) newMessage(IncomingMessage.fromJson(getJSONObject(i)))
-                }
-            }, failed)
+
+        Random().apply {
+            if (nextBoolean() && nextBoolean()) { // 1/4 chance
+                failed(VolleyError())
+                return
+            }
+        }
+
+        val aesKey = AesKeyGenerator.generateKey()
+        val encryptionKey = E2EEncryptor.encryptAESKeyWithPublicKey(
+            aesKey, E2EKeyGenerator.getPublicKeyFromString(inboxModel.inboxPublicKey.display())
         )
+
+
+        val encryptedMessage = AesEncryptor.encryptMessage(
+            """
+            {
+                "sender_public_key": "$mockPublicKey",
+                "text": "Hello !${sdf.format(Date())}" 
+            }
+        """.trimIndent(), aesKey
+        )
+
+
+        val message = IncomingMessage(
+            messageId = inboxModel.lastMessageId + 1,
+            encryptionKey = encryptionKey,
+            encryptedMessage = encryptedMessage.first,
+            iv = encryptedMessage.second
+        )
+        newMessage(message)
     }
 
-    private suspend fun loop() {
+    private fun loop() {
         while (isLooping) {
             try {
 
@@ -133,19 +150,22 @@ abstract class MessageReceiver(
                     connectionStatusChanged(ConnectionStatus.CONNECTED)
                     handleIncomingMessage(it)
                 }, failed = {
-                    throw it
+                    // TODO handle
                 })
 
             } catch (ex: Exception) {
                 connectionStatusChanged(ConnectionStatus.DISCONNECTED)
             }
-            kotlinx.coroutines.delay(5000)
+            // temp
+            Thread.sleep(3000)
         }
     }
 
-    suspend fun startPolling() {
+    fun startPolling() {
         isLooping = true
-        loop()
+        Thread {
+            loop()
+        }.start()
     }
 
     fun stopPolling() {

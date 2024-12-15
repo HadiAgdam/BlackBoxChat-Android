@@ -8,7 +8,7 @@ enum class ConversationColumns (override val definition: String): Column {
     INBOX_ID("INTEGER"),
     PUBLIC_KEY("TEXT"), // encrypted
     LABEL("TEXT"), // encrypted
-    HAS_NEW_MESSAGE("BOOLEAN"),
+    HAS_NEW_MESSAGE("BOOLEAN DEFAULT TRUE"),
     PUBLIC_KEY_IV("TEXT"), // for encryption
     LABEL_IV("TEXT"),
     SALT("TEXT") // for encryption
