@@ -10,6 +10,7 @@ import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationColu
 import ir.hadiagdamapps.blackboxchat.data.database.generateWhereQuery
 import ir.hadiagdamapps.blackboxchat.data.database.getBoolean
 import ir.hadiagdamapps.blackboxchat.data.database.put
+import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationEncryptedModel
 
 class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERSATIONS) {
@@ -118,5 +119,9 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
             else null
         }
     }
+
+
+    fun getConversationByPublicKey(publicKey: PublicKey): ConversationEncryptedModel? =
+        getConversations(where = hashMapOf(PUBLIC_KEY to publicKey.display())).firstOrNull()
 
 }
