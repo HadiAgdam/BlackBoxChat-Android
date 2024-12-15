@@ -157,7 +157,7 @@ abstract class MessageReceiver(
                     connectionStatusChanged(ConnectionStatus.CONNECTED)
                     handleIncomingMessage(it)
                 }, failed = {
-                    throw it
+                    // TODO handle
                 })
 
             } catch (ex: Exception) {
