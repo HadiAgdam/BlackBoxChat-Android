@@ -15,9 +15,12 @@ import androidx.navigation.NavController
 import ir.hadiagdamapps.blackboxchat.data.Clipboard
 import ir.hadiagdamapps.blackboxchat.data.ConversationHandler
 import ir.hadiagdamapps.blackboxchat.data.InboxHandler
+import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
+import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
 import ir.hadiagdamapps.blackboxchat.data.models.ConnectionStatus
 import ir.hadiagdamapps.blackboxchat.data.models.Label
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
+import ir.hadiagdamapps.blackboxchat.data.models.PrivateKey
 import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationModel
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
@@ -34,12 +37,10 @@ class ConversationsScreenViewmodel(
     private val conversationHandler = ConversationHandler(context)
     private val qrCodeGenerator = QrCodeGenerator()
     private val clipboard = Clipboard(context)
-    private val inbox = InboxHandler(context).getInboxById(args.inboxId)
+    private var inbox = InboxHandler(context).getInboxById(args.inboxId)
     private val messageReceiver = object : MessageReceiver(
         context = context,
         inboxId = inbox.inboxId,
-        inboxPrivateKey = inbox.inboxPrivateKey,
-        inboxPin = pin,
         salt = inbox.salt
     ) {
         override fun newConversation(conversationModel: ConversationModel) {
@@ -156,13 +157,27 @@ class ConversationsScreenViewmodel(
 
             try {
 
+                inbox = inbox.copy(
+                    inboxPrivateKey = PrivateKey.parse(
+                        AesEncryptor.decryptMessage(
+                            inbox.inboxPrivateKey.toString(),
+                            AesKeyGenerator.generateKey(
+                                pin.toString(),
+                                inbox.salt
+                            ),
+                            inbox.iv
+                        ).apply { Log.e("decrypted private key", this.toString()) }
+                            ?: throw Exception("null decrypted message")
+                    )!!
+                )
+
                 conversationHandler.loadConversations(
                     inboxId = args.inboxId, pin = pin!!
                 ).forEach {
                     _conversations.add(it)
                 }
 
-                messageReceiver.setPin(pin!!)
+                messageReceiver.init(inbox.inboxPrivateKey, pin!!)
                 startPolling()
 
             } catch (ex: Exception) {

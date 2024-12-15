@@ -32,14 +32,16 @@ import java.util.Random
 abstract class MessageReceiver(
     context: Context,
     private val inboxId: Long,
-    private val inboxPrivateKey: PrivateKey,
-    private var inboxPin: Pin?,
     salt: String
 
 ) {
 
-    fun setPin(pin: Pin) {
-        inboxPin = pin
+    private var inboxPrivateKey: PrivateKey? = null
+    private var inboxPin: Pin? = null
+
+    fun init(inboxPrivateKey: PrivateKey, inboxPin: Pin) { // WTF ?
+        this.inboxPrivateKey = inboxPrivateKey
+        this.inboxPin = inboxPin
     }
 
     private val mockPublicKey =
