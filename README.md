@@ -66,8 +66,7 @@ This design allows for queries to be generated dynamically:
 
 ```kotlin
 fun <T : Column> generateWhereQuery(where: HashMap<T, String>?): String {
-    return if (where == null) ""
-    else "WHERE (${where.keys.joinToString(" AND ") { "${it.columnName} = ?" }})"
+    return where?.let { w -> "WHERE (${w.keys.joinToString(" AND ") { column -> "${column.columnName} = ?" }})" } ?: ""
 }
 ```
 
@@ -121,4 +120,3 @@ This is my **first app using Jetpack Compose**, and I’m actively learning thro
 
 Contributions and suggestions are welcome! Feel free to fork this repository or open an issue.  
 
----
