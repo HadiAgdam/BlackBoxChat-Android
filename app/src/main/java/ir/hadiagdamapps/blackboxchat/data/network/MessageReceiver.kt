@@ -150,7 +150,7 @@ abstract class MessageReceiver(
         newMessage(message)
     }
 
-    private suspend fun loop() {
+    private fun loop() {
         while (isLooping) {
             try {
 
@@ -164,13 +164,16 @@ abstract class MessageReceiver(
             } catch (ex: Exception) {
                 connectionStatusChanged(ConnectionStatus.DISCONNECTED)
             }
-            kotlinx.coroutines.delay(5000)
+            // temp
+            Thread.sleep(3000)
         }
     }
 
-    suspend fun startPolling() {
+    fun startPolling() {
         isLooping = true
-        loop()
+        Thread {
+            loop()
+        }.start()
     }
 
     fun stopPolling() {
