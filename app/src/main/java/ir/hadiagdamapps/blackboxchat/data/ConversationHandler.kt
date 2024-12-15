@@ -100,7 +100,6 @@ class ConversationHandler(
         }
     }
 
-    fun getConversationByPublicKey(publicKey: PublicKey): ConversationModel? {
-        TODO()
-    }
+    fun getConversationByPublicKey(publicKey: PublicKey, pin: Pin): ConversationModel? =
+        data.getConversationByPublicKey(publicKey)?.decryptConversation(pin)
 }
