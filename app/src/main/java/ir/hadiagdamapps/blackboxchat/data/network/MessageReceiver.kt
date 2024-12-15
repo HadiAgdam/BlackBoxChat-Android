@@ -1,12 +1,7 @@
 package ir.hadiagdamapps.blackboxchat.data.network
 
 import android.content.Context
-import android.net.Uri
-import android.util.Log
-import com.android.volley.Request
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import ir.hadiagdamapps.blackboxchat.MessengerApp
 import ir.hadiagdamapps.blackboxchat.data.ConversationHandler
 import ir.hadiagdamapps.blackboxchat.data.Error
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
@@ -141,7 +136,7 @@ abstract class MessageReceiver(
 
 
         val message = IncomingMessage(
-            messageId = inboxModel.lastMessageId,
+            messageId = inboxModel.lastMessageId + 1,
             encryptionKey = encryptionKey,
             encryptedMessage = encryptedMessage.first,
             iv = encryptedMessage.second
