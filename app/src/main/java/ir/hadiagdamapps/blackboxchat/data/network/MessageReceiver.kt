@@ -117,8 +117,6 @@ abstract class MessageReceiver(
 
     private fun poll(newMessage: (IncomingMessage) -> Unit, failed: (VolleyError) -> Unit) {
 
-        Thread.sleep(5000)
-
         Random().apply {
             if (nextBoolean() && nextBoolean()) { // 1/4 chance
                 failed(VolleyError())
