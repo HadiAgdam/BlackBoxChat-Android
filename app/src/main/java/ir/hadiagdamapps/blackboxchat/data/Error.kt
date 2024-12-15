@@ -9,5 +9,6 @@ object Error {
     val INVALID_JSON = Exception("Invalid json content")
     val INVALID_PUBLIC_KEY = Exception("Invalid public key")
     val NOT_UNIQUE_MESSAGE_ID = Exception("MessageId is should be unique.")
+    val NOT_UNIQUE_PUBLIC_KEY_CONVERSATION = Exception("PublicKey should be unique")
 }
 

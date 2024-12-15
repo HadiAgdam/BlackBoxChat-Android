@@ -53,6 +53,9 @@ class ConversationHandler(
         if (getPublicKeyByInboxId(inboxId) == publicKey)
             throw Error.SAME_PUBLIC_KEY_CONVERSATION
 
+        if(loadConversations(inboxId, pin).indexOfFirst{ it.publicKey == publicKey } != -1)
+            throw Error.NOT_UNIQUE_PUBLIC_KEY_CONVERSATION
+
         val salt = AesKeyGenerator.generateSalt()
         val key = AesKeyGenerator.generateKey(pin.toString(), salt)
         val label = Label.create(publicKey)
