@@ -44,8 +44,7 @@ class ConversationHandler(
 
     private fun getPublicKeyByInboxId(inboxId: Long): PublicKey? {
         inboxData.getInboxes(hashMapOf(InboxColumns.INBOX_ID to inboxId.toString())).apply {
-            return if (this.isEmpty()) null
-            else this[0].inboxPublicKey
+            return firstOrNull()?.inboxPublicKey
         }
     }
 
