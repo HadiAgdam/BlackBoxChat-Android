@@ -1,6 +1,7 @@
 package ir.hadiagdamapps.blackboxchat.data.models.message
 
 data class OutgoingMessage(
+    val pendingMessageId: Long = -1,
     val receiver: String,
     val encryptionKey: String,
     val iv: String,
