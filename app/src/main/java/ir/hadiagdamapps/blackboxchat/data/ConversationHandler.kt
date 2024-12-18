@@ -1,7 +1,6 @@
 package ir.hadiagdamapps.blackboxchat.data
 
 import android.content.Context
-import android.util.Log
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
 import ir.hadiagdamapps.blackboxchat.data.database.conversation.ConversationData
@@ -28,8 +27,8 @@ class ConversationHandler(
                         ?: return null
                 ) ?: return null, label = Label.create(
                     AesEncryptor.decryptMessage(labelEncrypted, this, labelIv) ?: return null
-                ) ?: return null, hasNewMessage = hasNewMessage
-            )
+                ) ?: return null, hasNewMessage = hasNewMessage,
+            inboxId = this@decryptConversation.inboxId)
         }
     }
 
@@ -77,14 +76,16 @@ class ConversationHandler(
             hasNewMessage = true,
             publicKeyIv = publicKeyIv,
             labelIv = labelIv,
-            salt = salt
+            salt = salt,
+            inboxId = inboxId
         )
 
         return ConversationModel(
             conversationId = data.insert(model, inboxId),
             publicKey = publicKey,
             label = label,
-            hasNewMessage = true
+            hasNewMessage = true,
+            inboxId = inboxId
         )
     }
 
@@ -109,6 +110,10 @@ class ConversationHandler(
         inboxId: Long
     ): ConversationModel? =
         loadConversations(inboxId, pin).firstOrNull { it.publicKey == publicKey }
+
+
+    fun getConversationById(conversationId: Long, pin: Pin): ConversationModel =
+        data.getConversationById(conversationId)?.decryptConversation(pin)!!
 
 
 }
