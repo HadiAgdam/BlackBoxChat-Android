@@ -5,12 +5,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import ir.hadiagdamapps.blackboxchat.data.LocalMessageHandler
+import ir.hadiagdamapps.blackboxchat.data.OutgoingMessageHandler
+import ir.hadiagdamapps.blackboxchat.data.models.Pin
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.PendingMessage
+import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
 
-class ChatScreenViewmodel(context: Context) : ViewModel() {
+class ChatScreenViewmodel(
+    context: Context,
+    private val args: ChatRoute
+) : ViewModel() {
+
+    private val pin = Pin.fromHash(args.pin)!!
+    private var localMessageHandler = LocalMessageHandler(
+        context = context,
+        conversationId = args.conversationId,
+        pin = pin,
+        salt = args.salt
+    )
+    private var outgoingMessageHandler = object :  OutgoingMessageHandler(
+        context = context,
+        conversationId = args.conversationId,
+        pin = pin,
+        salt = args.salt,
+    ) {
+        override fun messageSent(pendingMessageId: Long) {
+            TODO("Not yet implemented")
+        }
+    }
 
     var screenTitle by mutableStateOf("")
         private set
@@ -35,12 +60,12 @@ class ChatScreenViewmodel(context: Context) : ViewModel() {
     //----------------------------------------------------------------------------------------------
 
     private fun loadPendingMessages() {
-        // TODO
+        outgoingMessageHandler.loadPendingMessages()
     }
 
 
     private fun loadLocalMessages() {
-        // TODO
+        localMessages = localMessageHandler.loadMessages() as SnapshotStateList<LocalMessage>
     }
 
     fun cancelSendingPendingMessageClick(pendingMessageId: Long) {
@@ -50,11 +75,13 @@ class ChatScreenViewmodel(context: Context) : ViewModel() {
     //----------------------------------------------------------------------------------------------
 
     fun chatBoxValueChange(newValue: String) {
-        // TODO
+        if (OutgoingMessageHandler.isValidTextMessage(newValue)) {
+            chatBoxContent = newValue
+        }
     }
 
     fun chatBoxSendClick() {
-        // TODO
+        outgoingMessageHandler.send(chatBoxContent)
     }
 
     //----------------------------------------------------------------------------------------------
