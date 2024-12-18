@@ -56,6 +56,7 @@ class ConversationsScreenViewmodel(
             _conversations.indexOfFirst { it.conversationId == message.conversationId }
                 .takeIf { it != -1 }?.let {
                     _conversations[it] = _conversations[it].copy(hasNewMessage = true)
+                    conversationHandler.updateHasNewMessageStatus(conversations[it].conversationId, true)
                 }
         }
 
@@ -97,6 +98,7 @@ class ConversationsScreenViewmodel(
 
     fun conversationClick(conversationId: Long) {
         navController.navigate(ChatRoute(conversationId, pin.toString(), inbox.salt))
+        conversationHandler.updateHasNewMessageStatus(conversationId, false)
     }
 
     fun conversationDetailsClick(conversationId: Long) {
