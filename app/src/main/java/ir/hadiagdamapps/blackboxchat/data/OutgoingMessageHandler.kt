@@ -45,6 +45,9 @@ abstract class OutgoingMessageHandler(
             )
         }
 
+    init {
+        startQueue()
+    }
 
     fun send(text: String) {
         if (!isValidTextMessage(text)) throw Error.INVALID_OUTGOING_TEXT

@@ -14,6 +14,7 @@ import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationModel
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.PendingMessage
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
+import java.util.Random
 
 class ChatScreenViewmodel(
     context: Context,
@@ -92,7 +93,16 @@ class ChatScreenViewmodel(
     }
 
     fun chatBoxSendClick() {
-        outgoingMessageHandler.send(chatBoxContent)
+        localMessages.add(
+            LocalMessage(
+                Random().nextLong(),
+                conversationId = conversation.conversationId,
+                text = chatBoxContent,
+                sent = true
+            )
+        )
+        chatBoxContent = ""
+
     }
 
     //----------------------------------------------------------------------------------------------
