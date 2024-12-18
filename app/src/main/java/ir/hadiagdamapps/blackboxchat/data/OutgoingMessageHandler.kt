@@ -92,6 +92,7 @@ abstract class OutgoingMessageHandler(
                     sender.send(message)
                     messageSent(message.pendingMessageId)
                     pendingMessages.remove(message)
+                    data.deleteById(message.pendingMessageId)
                 } catch (ex: Exception) {
                     Log.e("queue error", ex.toString())// TODO()
                 }
