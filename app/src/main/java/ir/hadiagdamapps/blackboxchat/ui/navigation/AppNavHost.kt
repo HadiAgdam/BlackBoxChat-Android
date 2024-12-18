@@ -12,8 +12,10 @@ import androidx.navigation.toRoute
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.InboxesRoute
+import ir.hadiagdamapps.blackboxchat.ui.screens.ChatScreen
 import ir.hadiagdamapps.blackboxchat.ui.screens.ConversationsScreen
 import ir.hadiagdamapps.blackboxchat.ui.screens.InboxesScreen
+import ir.hadiagdamapps.blackboxchat.ui.viewmodels.ChatScreenViewmodel
 import ir.hadiagdamapps.blackboxchat.ui.viewmodels.ConversationsScreenViewmodel
 import ir.hadiagdamapps.blackboxchat.ui.viewmodels.InboxScreenViewmodel
 
@@ -55,7 +57,14 @@ fun AppNavHost(navController: NavHostController, context: Context) {
 
         }
 
-        composable<ChatRoute> { }
+        composable<ChatRoute> {
+            val args = it.toRoute<ChatRoute>()
+
+            val viewmodel by remember {
+                mutableStateOf(ChatScreenViewmodel(context, args))
+            }
+            ChatScreen(viewmodel)
+        }
 
     }
 
