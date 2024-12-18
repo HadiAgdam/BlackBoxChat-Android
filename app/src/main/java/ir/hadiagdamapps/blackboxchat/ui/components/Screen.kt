@@ -29,6 +29,7 @@ fun Screen(
     iconTint: Color = Color.White,
     fabClick: (() -> Unit)? = null,
     snackBarHost: @Composable () -> Unit = {},
+    bottomSheet: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
 
@@ -79,7 +80,8 @@ fun Screen(
             }
 
 
-        })
+        },
+        bottomBar = bottomSheet)
 
 }
 

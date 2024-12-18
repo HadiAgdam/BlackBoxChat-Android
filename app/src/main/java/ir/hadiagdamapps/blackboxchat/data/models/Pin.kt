@@ -16,6 +16,10 @@ class Pin private constructor(private val text: String) {
             else null
         }
 
+        fun fromHash(hash: String): Pin? {
+            return Pin(hash) // not complete
+        }
+
         private fun isValid(text: String): Boolean = text.isDigitsOnly() && text.length == LENGTH
     }
 

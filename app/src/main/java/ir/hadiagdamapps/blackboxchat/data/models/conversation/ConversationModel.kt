@@ -7,5 +7,6 @@ data class ConversationModel(
     val conversationId: Long,
     val publicKey: PublicKey,
     val label: Label,
-    val hasNewMessage: Boolean
+    val hasNewMessage: Boolean,
+    val inboxId: Long
 )

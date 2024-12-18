@@ -5,6 +5,7 @@ object Error {
     val PRIVATE_KEY_PARSE_ERROR = Exception("Failed to parse private key")
     val INVALID_JSON = Exception("Invalid json content")
     val INVALID_PUBLIC_KEY = Exception("Invalid public key")
+    val INVALID_OUTGOING_TEXT = Exception("Invalid text for outgoing message")
 
     val INSERT_FAILED = Exception("Failed to insert to database")
 

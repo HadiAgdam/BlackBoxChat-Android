@@ -7,5 +7,6 @@ data class ConversationEncryptedModel(
     val hasNewMessage: Boolean,
     val publicKeyIv: String,
     val labelIv: String,
-    val salt: String
+    val salt: String,
+    val inboxId: Long
 )

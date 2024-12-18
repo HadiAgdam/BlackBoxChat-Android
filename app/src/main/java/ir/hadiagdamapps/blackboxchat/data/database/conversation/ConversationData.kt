@@ -27,7 +27,8 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
                     $HAS_NEW_MESSAGE,
                     $PUBLIC_KEY_IV,
                     $LABEL_IV,
-                    $SALT
+                    $SALT,
+                    $INBOX_ID
                 from ${table.tableName}
                 ${generateWhereQuery(where)}
                 
@@ -48,7 +49,8 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
                 hasNewMessage = c.getBoolean(3),
                 publicKeyIv = c.getString(4),
                 labelIv = c.getString(5),
-                salt = c.getString(6)
+                salt = c.getString(6),
+                inboxId = c.getLong(7)
             ).apply {
                 Log.e("id", this.conversationId.toString())
                 Log.e("public key", this.publicKeyEncrypted)
@@ -123,5 +125,10 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
 
     fun getConversationByPublicKey(publicKey: PublicKey): ConversationEncryptedModel? =
         getConversations(where = hashMapOf(PUBLIC_KEY to publicKey.display())).firstOrNull()
+
+    fun getConversationById(conversationId: Long): ConversationEncryptedModel? {
+        return getConversations(where = hashMapOf(CONVERSATION_ID to conversationId.toString())).firstOrNull()
+    }
+
 
 }
