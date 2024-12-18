@@ -111,17 +111,29 @@ class ConversationData(context: Context) : DatabaseHelper(context, Table.CONVERS
             })
     }
 
+    fun updateHasNewMessageStatus(
+        conversationId: Long,
+        hasNewMessage: Boolean = false
+    ) {
+        update(hashMapOf(CONVERSATION_ID to conversationId.toString()),
+            values = ContentValues().apply
+            {
+                put(HAS_NEW_MESSAGE, hasNewMessage)
+            })
+
+    }
+
 
     fun getSalt(conversationId: Long): String? {
         readableDatabase.rawQuery(
             "SELECT $SALT from ${table.tableName} where $CONVERSATION_ID = ?",
             arrayOf(conversationId.toString())
         ).apply {
+            close()
             return if (this.moveToFirst()) this.getString(0)
             else null
         }
     }
-
 
     fun getConversationByPublicKey(publicKey: PublicKey): ConversationEncryptedModel? =
         getConversations(where = hashMapOf(PUBLIC_KEY to publicKey.display())).firstOrNull()
