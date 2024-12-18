@@ -26,6 +26,7 @@ import ir.hadiagdamapps.blackboxchat.data.models.inbox.InboxModel
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.network.MessageReceiver
 import ir.hadiagdamapps.blackboxchat.data.qr.QrCodeGenerator
+import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ConversationsRoute
 
 class ConversationsScreenViewmodel(
