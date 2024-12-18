@@ -57,4 +57,13 @@ class MessageData(context: Context) : DatabaseHelper(context, Table.MESSAGES) {
                 )
             while (c.moveToNext())
 
+            c.close()
+        }
+
+
+    fun getByConversationId(conversationId: Long): List<EncryptedLocalMessage> =
+        getAll(hashMapOf(CONVERSATION_ID to conversationId.toString()))
+
 }
+
+
