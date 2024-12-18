@@ -14,4 +14,7 @@ enum class PendingMessageColumns(override val definition: String) : Column {
     override val columnName: String
         get() = name.lowercase()
 
+    override fun toString() = name.lowercase()
+
+
 }
