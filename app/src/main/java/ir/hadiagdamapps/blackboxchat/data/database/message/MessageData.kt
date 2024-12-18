@@ -5,6 +5,7 @@ import android.content.Context
 import ir.hadiagdamapps.blackboxchat.data.Error
 import ir.hadiagdamapps.blackboxchat.data.database.DatabaseHelper
 import ir.hadiagdamapps.blackboxchat.data.database.Table
+import ir.hadiagdamapps.blackboxchat.data.database.generateWhereQuery
 import ir.hadiagdamapps.blackboxchat.data.database.getBoolean
 import ir.hadiagdamapps.blackboxchat.data.models.message.EncryptedLocalMessage
 import ir.hadiagdamapps.blackboxchat.data.database.message.MessageColumns.*
@@ -37,11 +38,12 @@ class MessageData(context: Context) : DatabaseHelper(context, Table.MESSAGES) {
                 
                 SELECT 
                     $MESSAGE_ID,
-                    $CONVERSATION_ID
+                    $CONVERSATION_ID,
                     $TEXT,
                     $SENT,
                     $IV
                 FROM ${table.tableName}
+                ${generateWhereQuery(where)}
                 
             """.trimIndent(), where?.values?.toTypedArray()
             )
