@@ -115,5 +115,9 @@ class ConversationHandler(
     fun getConversationById(conversationId: Long, pin: Pin): ConversationModel =
         data.getConversationById(conversationId)?.decryptConversation(pin)!!
 
+    fun updateHasNewMessageStatus(conversationId: Long, hasNewMessage: Boolean) {
+        data.updateHasNewMessageStatus(conversationId, hasNewMessage)
+    }
+
 
 }
