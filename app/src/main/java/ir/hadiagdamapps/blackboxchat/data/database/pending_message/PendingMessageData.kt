@@ -10,7 +10,7 @@ import ir.hadiagdamapps.blackboxchat.data.models.message.OutgoingMessage
 import ir.hadiagdamapps.blackboxchat.data.database.pending_message.PendingMessageColumns.*
 import ir.hadiagdamapps.blackboxchat.data.database.put
 
-class PendingMessageData(context: Context) : DatabaseHelper(context, Table.MESSAGES) {
+class PendingMessageData(context: Context) : DatabaseHelper(context, Table.PENDING_MESSAGES) {
 
     private fun getAll(where: HashMap<PendingMessageColumns, String>? = null): List<OutgoingMessage> {
         val c = readableDatabase.rawQuery(
