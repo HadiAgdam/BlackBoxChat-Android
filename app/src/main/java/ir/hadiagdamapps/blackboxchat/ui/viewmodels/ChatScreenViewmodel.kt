@@ -36,7 +36,14 @@ class ChatScreenViewmodel(
         salt = args.salt,
     ) {
         override fun messageSent(pendingMessageId: Long) {
-            TODO("Not yet implemented")
+            localMessages.add(
+                LocalMessage(
+                    messageId = pendingMessageId, // wrong
+                    conversationId = conversation.conversationId,
+                    text = pendingMessages.first { it.pendingMessageId == pendingMessageId }.text,
+                    sent = true
+                )
+            )
         }
     }
 
