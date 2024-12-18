@@ -66,9 +66,10 @@ class ChatScreenViewmodel(
         outgoingMessageHandler.loadPendingMessages()
     }
 
-
     private fun loadLocalMessages() {
-        localMessages = localMessageHandler.loadMessages() as SnapshotStateList<LocalMessage>
+        localMessages.clear()
+        for (message in localMessageHandler.loadMessages())
+            localMessages.add(message)
     }
 
     fun cancelSendingPendingMessageClick(pendingMessageId: Long) {
