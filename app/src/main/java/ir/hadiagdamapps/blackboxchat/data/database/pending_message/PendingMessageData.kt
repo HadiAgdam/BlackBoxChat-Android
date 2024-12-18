@@ -56,7 +56,7 @@ class PendingMessageData(context: Context) : DatabaseHelper(context, Table.PENDI
             put(RECEIVER, outgoingMessage.receiver)
             put(ENCRYPTED_MESSAGE, outgoingMessage.encryptedMessage)
             put(IV, outgoingMessage.iv)
-            put(ENCRYPTED_MESSAGE, outgoingMessage.encryptedMessage)
+            put(ENCRYPTION_KEY, outgoingMessage.encryptionKey)
         })
     }
 
