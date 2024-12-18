@@ -11,7 +11,35 @@ import ir.hadiagdamapps.blackboxchat.data.database.pending_message.PendingMessag
 class PendingMessageData(context: Context) : DatabaseHelper(context, Table.MESSAGES) {
 
     private fun getAll(where: HashMap<PendingMessageColumns, String>? = null): List<OutgoingMessage> {
-        TODO()
+        val c = readableDatabase.rawQuery(
+            """
+            SELECT
+                $MESSAGE_ID,
+                $RECEIVER,
+                $ENCRYPTION_KEY,
+                $IV,
+                $ENCRYPTED_MESSAGE
+            from ${table.tableName}
+            ${generateWhereQuery(where)}
+        """.trimIndent(), where?.values?.toTypedArray()
+        )
+
+        return ArrayList<OutgoingMessage>().apply {
+
+            if (c.moveToFirst()) do
+                add(
+                    OutgoingMessage(
+                        pendingMessageId = c.getLong(0),
+                        receiver = c.getString(1),
+                        encryptionKey = c.getString(2),
+                        iv = c.getString(3),
+                        encryptedMessage = c.getString(4)
+                    )
+                )
+            while (c.moveToNext())
+
+            c.close()
+        }
     }
 
     fun getByReceiver(publicKey: PublicKey): List<OutgoingMessage> =
