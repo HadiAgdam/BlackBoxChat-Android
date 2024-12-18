@@ -5,6 +5,7 @@ import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesEncryptor
 import ir.hadiagdamapps.blackboxchat.data.crypto.encryption.aes.AesKeyGenerator
 import ir.hadiagdamapps.blackboxchat.data.database.message.MessageData
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
+import ir.hadiagdamapps.blackboxchat.data.models.message.EncryptedLocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 
 class LocalMessageHandler(
@@ -31,5 +32,23 @@ class LocalMessageHandler(
             )
         }
     }
+
+    fun newMessage(
+        message: LocalMessage
+    ) {
+        val key = AesKeyGenerator.generateKey(pin.toString(), salt)
+
+        val encryptedMessage = AesEncryptor.encryptMessage(message.text, key)
+
+        val encryptedLocalMessage = EncryptedLocalMessage(
+            messageId = message.messageId,
+            conversationId = message.conversationId,
+            encryptedText = encryptedMessage.first,
+            sent = message.sent,
+            iv = encryptedMessage.second
+        )
+        messageData.newMessage(encryptedLocalMessage)
+    }
+
 
 }
