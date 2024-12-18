@@ -94,6 +94,10 @@ class ConversationsScreenViewmodel(
 
     //----------------------------------------------------------------------------------------------
 
+    fun conversationClick(conversationId: Long) {
+        navController.navigate(ChatRoute(conversationId, pin.toString(), inbox.salt))
+    }
+
     fun conversationDetailsClick(conversationId: Long) {
         _conversations.first { it.conversationId == conversationId }.apply {
             detailsDialogQrCode = qrCodeGenerator.generateCode(this.publicKey.display())
@@ -161,19 +165,12 @@ class ConversationsScreenViewmodel(
 
             try {
 
-                inbox = inbox.copy(
-                    inboxPrivateKey = PrivateKey.parse(
-                        AesEncryptor.decryptMessage(
-                            inbox.inboxPrivateKey.toString(),
-                            AesKeyGenerator.generateKey(
-                                pin.toString(),
-                                inbox.salt
-                            ),
-                            inbox.iv
-                        ).apply { Log.e("decrypted private key", this.toString()) }
-                            ?: throw Exception("null decrypted message")
-                    )!!
-                )
+                inbox = inbox.copy(inboxPrivateKey = PrivateKey.parse(AesEncryptor.decryptMessage(
+                    inbox.inboxPrivateKey.toString(), AesKeyGenerator.generateKey(
+                        pin.toString(), inbox.salt
+                    ), inbox.iv
+                ).apply { Log.e("decrypted private key", this.toString()) }
+                    ?: throw Exception("null decrypted message"))!!)
 
                 conversationHandler.loadConversations(
                     inboxId = args.inboxId, pin = pin!!
