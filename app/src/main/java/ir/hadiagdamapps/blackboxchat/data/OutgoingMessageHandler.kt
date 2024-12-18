@@ -16,21 +16,19 @@ import ir.hadiagdamapps.blackboxchat.data.network.MessageSender
 
 abstract class OutgoingMessageHandler(
     private val context: Context,
-    private val conversationId: Long,
+    private val conversation: ConversationModel,
     private val pin: Pin,
     private val salt: String,
 ) {
     private val aesKey = AesKeyGenerator.generateKey(pin.toString(), salt)
     private val pendingMessages = ArrayList<OutgoingMessage>()
     private val data = PendingMessageData(context)
-    private val conversation: ConversationModel =
-        ConversationHandler(context).getConversationById(conversationId, pin)
     private val inbox: InboxModel =
         InboxHandler(context).getInboxById(conversation.inboxId)!! // should
     private var sending: Boolean = false
     private val sender = MessageSender(
         context = context,
-        conversationId = conversationId,
+        conversationId = conversation.conversationId,
         pin = pin,
         salt = salt,
     )

@@ -5,11 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import ir.hadiagdamapps.blackboxchat.data.ConversationHandler
 import ir.hadiagdamapps.blackboxchat.data.LocalMessageHandler
 import ir.hadiagdamapps.blackboxchat.data.OutgoingMessageHandler
 import ir.hadiagdamapps.blackboxchat.data.models.Pin
+import ir.hadiagdamapps.blackboxchat.data.models.conversation.ConversationModel
 import ir.hadiagdamapps.blackboxchat.data.models.message.LocalMessage
 import ir.hadiagdamapps.blackboxchat.data.models.message.PendingMessage
 import ir.hadiagdamapps.blackboxchat.ui.navigation.routes.ChatRoute
@@ -20,15 +21,17 @@ class ChatScreenViewmodel(
 ) : ViewModel() {
 
     private val pin = Pin.fromHash(args.pin)!!
+    private val conversation: ConversationModel =
+        ConversationHandler(context).getConversationById(args.conversationId, pin)
     private var localMessageHandler = LocalMessageHandler(
         context = context,
         conversationId = args.conversationId,
         pin = pin,
         salt = args.salt
     )
-    private var outgoingMessageHandler = object :  OutgoingMessageHandler(
+    private var outgoingMessageHandler = object : OutgoingMessageHandler(
         context = context,
-        conversationId = args.conversationId,
+        conversation = conversation,
         pin = pin,
         salt = args.salt,
     ) {
@@ -37,7 +40,7 @@ class ChatScreenViewmodel(
         }
     }
 
-    var screenTitle by mutableStateOf("")
+    var screenTitle by mutableStateOf(conversation.label.display())
         private set
 
     var localMessages = mutableStateListOf<LocalMessage>()
