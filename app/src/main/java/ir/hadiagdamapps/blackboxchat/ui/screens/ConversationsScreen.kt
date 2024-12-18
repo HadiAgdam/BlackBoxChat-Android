@@ -1,5 +1,6 @@
 package ir.hadiagdamapps.blackboxchat.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import ir.hadiagdamapps.blackboxchat.ui.components.ConversationItem
 import ir.hadiagdamapps.blackboxchat.ui.components.Screen
@@ -49,7 +51,8 @@ fun ConversationsScreen(viewmodel: ConversationsScreenViewmodel) {
                 ConversationItem(
                     label = it.label.display(),
                     detailsClick = { viewmodel.conversationDetailsClick(it.conversationId) },
-                    hasUnseenMessage = it.hasNewMessage
+                    hasUnseenMessage = it.hasNewMessage,
+                    modifier = Modifier.clickable { viewmodel.conversationClick(it.conversationId) }
                 )
             }
         }
