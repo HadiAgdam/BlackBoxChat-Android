@@ -5,6 +5,7 @@ import android.content.Context
 import ir.hadiagdamapps.blackboxchat.data.Error
 import ir.hadiagdamapps.blackboxchat.data.database.DatabaseHelper
 import ir.hadiagdamapps.blackboxchat.data.database.Table
+import ir.hadiagdamapps.blackboxchat.data.database.getBoolean
 import ir.hadiagdamapps.blackboxchat.data.models.message.EncryptedLocalMessage
 import ir.hadiagdamapps.blackboxchat.data.database.message.MessageColumns.*
 import ir.hadiagdamapps.blackboxchat.data.database.put
