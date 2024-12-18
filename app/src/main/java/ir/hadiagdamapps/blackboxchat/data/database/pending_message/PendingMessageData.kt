@@ -1,5 +1,6 @@
 package ir.hadiagdamapps.blackboxchat.data.database.pending_message
 
+import android.content.ContentValues
 import android.content.Context
 import ir.hadiagdamapps.blackboxchat.data.database.DatabaseHelper
 import ir.hadiagdamapps.blackboxchat.data.database.Table
@@ -7,6 +8,7 @@ import ir.hadiagdamapps.blackboxchat.data.database.generateWhereQuery
 import ir.hadiagdamapps.blackboxchat.data.models.PublicKey
 import ir.hadiagdamapps.blackboxchat.data.models.message.OutgoingMessage
 import ir.hadiagdamapps.blackboxchat.data.database.pending_message.PendingMessageColumns.*
+import ir.hadiagdamapps.blackboxchat.data.database.put
 
 class PendingMessageData(context: Context) : DatabaseHelper(context, Table.MESSAGES) {
 
@@ -49,7 +51,13 @@ class PendingMessageData(context: Context) : DatabaseHelper(context, Table.MESSA
     fun insert(
         outgoingMessage: OutgoingMessage
     ) {
-        TODO()
+        writableDatabase.insert(table.tableName, null, ContentValues().apply {
+            put(MESSAGE_ID, outgoingMessage.pendingMessageId)
+            put(RECEIVER, outgoingMessage.receiver)
+            put(ENCRYPTED_MESSAGE, outgoingMessage.encryptedMessage)
+            put(IV, outgoingMessage.iv)
+            put(ENCRYPTED_MESSAGE, outgoingMessage.encryptedMessage)
+        })
     }
 
     fun deleteById(pendingMessageId: Long) {
