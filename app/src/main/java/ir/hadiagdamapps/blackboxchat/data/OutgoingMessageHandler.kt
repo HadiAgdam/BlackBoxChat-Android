@@ -58,8 +58,8 @@ abstract class OutgoingMessageHandler(
         val textMessage = """
             
             {
-                "sender": "${inbox.inboxPublicKey}",
-                 "message": "$text"
+                "sender_public_key": "${inbox.inboxPublicKey}",
+                 "text": "$text"
             }
             
         """.trimIndent()
